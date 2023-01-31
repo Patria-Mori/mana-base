@@ -1,0 +1,29 @@
+{
+    "name": "pm-mana",
+    "title": "Patria Mori Mana module",
+    "description": "A simple module that provides a lot of nice automation for using Lori's mana system in Foundry VTT.",
+    "authors": [
+        {
+            "name": "Jonas"
+        }
+    ],
+    "version": "0.0.1",
+    "compatibility": {
+        "minimum": 10,
+        "verified": 10,
+        "maximum": 11
+    },
+    "scripts": [
+        "scripts/mana.js"
+    ],
+    "languages": [
+        {
+            "lang": "en",
+            "name": "English",
+            "path": "languages/en.json"
+        }
+    ],
+    "styles": [
+        "styles/mana.css"
+    ]
+}
