@@ -14,7 +14,7 @@
         "maximum": 11
     },
     "scripts": [
-        "scripts/mana.js"
+        "scripts/mana.mjs"
     ],
     "languages": [
         {

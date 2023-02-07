@@ -94,7 +94,7 @@ class Mana {
      * @returns {number} Integer value of mana regen per tick.
      */
     static calculateManaRegen(intMod, profBonus, extra) {
-        return (intMod * profBonus, extra);
+        return (intMod * profBonus) + 1 + extra;
     }
 
     /**
