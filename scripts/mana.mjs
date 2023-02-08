@@ -4,7 +4,9 @@ class Mana {
     static ID = 'pm-mana';
 
     static FLAGS = {
-        MANA: "pm-mana"
+        MANA: "pm-mana",
+        MANA_STATE: "mana-state",
+        MANA_PROPERTY: "mana-property"
     }
 
     static TEMPLATES = {

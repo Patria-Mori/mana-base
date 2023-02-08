@@ -14,7 +14,8 @@
         "maximum": 11
     },
     "scripts": [
-        "scripts/mana.mjs"
+        "scripts/mana.mjs",
+        "scripts/entityManaState.js"
     ],
     "languages": [
         {
