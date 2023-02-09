@@ -1,16 +1,19 @@
+/**
+ * The Mana State class is used to manipulate the mana state of an actor, or 
+ * to set/unset mana-state related flags.
+ */
 class ManaState {
 
-
     static getMana(actorId) {
-        return game.actors.get(actorId)?.getFlag(Mana.ID, Mana.FLAGS.MANA_STATE);
+        return ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_STATE);
     }
 
     static setMana(actorId, newManaVal) {
-        return game.actors.get(actorId)?.setFlag(Mana.ID, Mana.FLAGS.MANA_STATE, newManaVal);
+        return ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.MANA_STATE, newManaVal);
     }
 
     static unsetMana(actorId) {
-        return game.actors.get(actorId)?.unsetFlag(Mana.ID, Mana.FLAGS.MANA_STATE);
+        return ManaUtils.unsetManaActorFlag(actorId, Mana.FLAGS.MANA_STATE);
     }
 
     static addManaSafe(actorId, manaDelta) {
@@ -38,20 +41,15 @@ class ManaState {
     }
 
     static getManaProps(actorId) {
-        return game.actors.get(actorId)?.getFlag(Mana.ID, Mana.FLAGS.MANA_PROPERTY);
+        return ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE);
     }
 
-    /**
-     * 
-     * @param {string} actorId 
-     * @param {ManaAttributeState} newManaProps Mana Properties.
-     */
     static setManaProps(actorId, newManaProps) {
-        return game.actors.get(actorId)?.setFlag(Mana.ID, Mana.FLAGS.MANA_PROPERTY, newManaProps);
+        return ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE, newManaProps);
     }
 
     static unsetManaProps(actorId) {
-        return game.actors.get(actorId)?.unsetFlag(Mana.ID, Mana.FLAGS.MANA_PROPERTY);
+        return ManaUtils.unsetManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE);
     }
 
 }
