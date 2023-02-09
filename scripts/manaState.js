@@ -59,18 +59,57 @@ class ManaState {
 /**
  * Mana Attribute State represents different mana-related attributes, which are 
  * stateless and derivable from other entity attributes.
+ * 
+ * NB: These should not include Mana Attribute Modifiers, as that would make them 
+ * stateless. This is also why there are no setters, create a new one if you have to.
  */
 class ManaAttributeState {
 
+    #manaCap = 0;       // Mana capacity
+    #overchargeCap = 0; // Overcharge mana capacity
+    #manaRegen = 0;     // Mana regen per tick
+    #manaControl = 0;   // Number of d8s to roll when manipulating mana
+
+    /**
+     * Constructor for Mana Attribute class.
+     * @param {number} manaCap       Mana capacity
+     * @param {number} overchargeCap Overcharge mana capacity
+     * @param {number} manaRegen     Mana regen value per tick
+     * @param {number} manaControl   Number of d8s to roll when manipulating mana
+     */
     constructor(manaCap, overchargeCap, manaRegen, manaControl) {
-        this.manaCap = manaCap;
-        this.overchargeCap = overchargeCap;
-        this.manaRegen = manaRegen;
-        this.manaControl = manaControl;
+        this.#manaCap = manaCap;
+        this.#overchargeCap = overchargeCap;
+        this.#manaRegen = manaRegen;
+        this.#manaControl = manaControl;
     }
 
+    /**
+     * Getter for mana capacity.
+     */
     get manaCap() {
-        return this.manaCap;
+        return this.#manaCap;
+    }
+
+    /**
+     * Getter for overcharge mana capacity.
+     */
+    get overchargeCap() {
+        return this.#overchargeCap;
+    }
+
+    /**
+     * Getter for mana regneration value.
+     */
+    get manaRegen() {
+        return this.#manaRegen;
+    }
+
+    /**
+     * Getter for mana control dice number.
+     */
+    get manaControl() {
+        return this.#manaControl;
     }
 
 }
