@@ -15,6 +15,7 @@
     },
     "scripts": [
         "scripts/mana.mjs",
+        "scripts/manaUtils.js",
         "scripts/manaState.js"
     ],
     "languages": [
