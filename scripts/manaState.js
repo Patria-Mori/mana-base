@@ -31,25 +31,77 @@ class ManaState {
         return ((newMana < 0) ? this.setMana(0) : this.setMana(newMana));
     }
 
+    /**
+     * Utility method for regenerating mana as per the mana regeneration rules.
+     * Will naturally cap out at either the mana capacity or the overcharge capacity.
+     * 
+     * @param {string} actorId The ID of the actor to regenerate mana for.
+     * @param {number} ticks The number of "ticks" used to renerate mana.
+     * @param {boolean} overcharge Boolean determining max capacity, 
+     * true for mana cap + overcharge cap, false for only mana cap 
+     * @returns 
+     */
     static regenMana(actorId, ticks, overcharge) {
-        const manaProps = this.getManaProps(actorId);
-        const regMana = manaProps.manaRegen * ticks;
+        const manaAtts = this.getManaAttributes(actorId);
+        const regMana = manaAtts.manaRegen * ticks;
         const newMana = this.getMana(actorId) + regMana;
         
-        const maxMana = overcharge ? manaProps.manaCap + manaProps.overchargeCap : manaProps.manaCap;
+        const maxMana = overcharge ? manaAtts.manaCap + manaAtts.overchargeCap : manaAtts.manaCap;
         return newMana > maxMana ? this.setMana(actorId, maxMana) : this.setMana(actorId, newMana);
     }
 
-    static getManaProps(actorId) {
+    /**
+     * Get Mana Attribute from a given actor.
+     * @param {string} actorId The ID of the actor to get the mana attribute flag from.
+     * @returns Mana Attribute object.
+     */
+    static getManaAttributes(actorId) {
         return ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE);
     }
 
-    static setManaProps(actorId, newManaProps) {
-        return ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE, newManaProps);
+    /**
+     * Set Mana Attribute for a given actor.
+     * @param {string} actorId The ID of the actor to set the mana attribute flag for.
+     * @returns Promise of updated actor document.
+     */
+    static setManaAttributes(actorId, newManaAttributes) {
+        return ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE, newManaAttributes);
     }
 
-    static unsetManaProps(actorId) {
+    /**
+     * Unset Mana Attribute for a given actor.
+     * @param {string} actorId The ID of the actor to unset the mana attribute flag for.
+     * @returns Promise of updated actor document.
+     */
+    static unsetManaAttributes(actorId) {
         return ManaUtils.unsetManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE);
+    }
+
+    /**
+     * Get Mana Attribute Mods from a given actor.
+     * @param {string} actorId The ID of the actor to get the mana attribute mods flag from.
+     * @returns Mana Attribute Mods object.
+     */
+    static getManaAttributeMods(actorId) {
+        return ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE_MODS);
+    }
+
+    /**
+     * Set Mana Attribute Mods for a given actor.
+     * @param {string} actorId The ID of the actor to set the mana attribute mods flag for.
+     * @returns Promise of updated actor document.
+     */
+    static setManaAttributeMods(actorId, newManaAttributeMods) {
+        return ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE_MODS, newManaAttributeMods);
+    }
+
+    /**
+     * Unset Mana Attribute Mods for a given actor.
+     * @param {string} actorId The ID of the actor to unset the mana attribute mods flag for.
+     * @returns Promise of updated actor document.
+     */
+    static unsetManaAttributeMods(actorId) {
+        return ManaUtils.unsetManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE_MODS);
     }
 
 }
@@ -63,10 +115,10 @@ class ManaState {
  */
 class ManaAttributeState {
 
-    #manaCap = 0;       // Mana capacity
-    #overchargeCap = 0; // Overcharge mana capacity
-    #manaRegen = 0;     // Mana regen per tick
-    #manaControl = 0;   // Number of d8s to roll when manipulating mana
+    manaCap = 0;       // Mana capacity
+    overchargeCap = 0; // Overcharge mana capacity
+    manaRegen = 0;     // Mana regen per tick
+    manaControl = 0;   // Number of d8s to roll when manipulating mana
 
     /**
      * Constructor for Mana Attribute class.
@@ -76,38 +128,38 @@ class ManaAttributeState {
      * @param {number} manaControl   Number of d8s to roll when manipulating mana
      */
     constructor(manaCap, overchargeCap, manaRegen, manaControl) {
-        this.#manaCap = manaCap;
-        this.#overchargeCap = overchargeCap;
-        this.#manaRegen = manaRegen;
-        this.#manaControl = manaControl;
+        this.manaCap = manaCap;
+        this.overchargeCap = overchargeCap;
+        this.manaRegen = manaRegen;
+        this.manaControl = manaControl;
     }
 
     /**
      * Getter for mana capacity.
      */
     get manaCap() {
-        return this.#manaCap;
+        return this.manaCap;
     }
 
     /**
      * Getter for overcharge mana capacity.
      */
     get overchargeCap() {
-        return this.#overchargeCap;
+        return this.overchargeCap;
     }
 
     /**
      * Getter for mana regneration value.
      */
     get manaRegen() {
-        return this.#manaRegen;
+        return this.manaRegen;
     }
 
     /**
      * Getter for mana control dice number.
      */
     get manaControl() {
-        return this.#manaControl;
+        return this.manaControl;
     }
 
 }
@@ -124,10 +176,10 @@ class ManaAttributeState {
  */
 class ManaAttributeMods {
 
-    #manaCapModsMap = null;         // Map of modifiers that increase/decrease Mana Capacity
-    #manaRegenModsMap = null;       // Map of modifiers that increase/decrease Mana Regeneration
-    #manaControlModsMap = null;     // Map of modifiers that increase/decrease Mana Control Dice
-    #manaOverchargeModsMap = null;  // Map of modifiers that increase/decrease Mana Overcharge Capacity
+    manaCapModsMap = null;         // Map of modifiers that increase/decrease Mana Capacity
+    manaRegenModsMap = null;       // Map of modifiers that increase/decrease Mana Regeneration
+    manaControlModsMap = null;     // Map of modifiers that increase/decrease Mana Control Dice
+    manaOverchargeModsMap = null;  // Map of modifiers that increase/decrease Mana Overcharge Capacity
 
     /**
      * Mana Attribute Mods constructor, takes in arrays of String:Number pairs.
@@ -137,10 +189,10 @@ class ManaAttributeMods {
      * @param {Array} manaOverchargeModsArr Array of modifers that increase/decrease Mana Overcharge Capacity
      */
     constructor(manaCapModsArr, manaRegenModsArr, manaControlModsArr, manaOverchargeModsArr) {
-        this.#manaCapModsMap = new Map(manaCapModsArr);
-        this.#manaRegenModsMap = new Map(manaRegenModsArr);
-        this.#manaControlModsMap = new Map(manaControlModsArr);
-        this.#manaOverchargeModsMap = new Map(manaOverchargeModsArr);
+        this.manaCapModsMap = new Map(manaCapModsArr);
+        this.manaRegenModsMap = new Map(manaRegenModsArr);
+        this.manaControlModsMap = new Map(manaControlModsArr);
+        this.manaOverchargeModsMap = new Map(manaOverchargeModsArr);
     }
 
     /**
@@ -191,7 +243,7 @@ class ManaAttributeMods {
      * @param {number} value The numerical value (negative/positive) of the modifier
      */
     addManaCapMod(modId, value) {
-        this.#manaCapModsMap.set(modId, value);
+        this.manaCapModsMap.set(modId, value);
     }
 
     /**
@@ -200,7 +252,7 @@ class ManaAttributeMods {
      * @param {number} value The numerical value (negative/positive) of the modifier
      */
     addManaRegenMod(modId, value) {
-        this.#manaRegenModsMap.set(modId, value);
+        this.manaRegenModsMap.set(modId, value);
     }
 
     /**
@@ -209,7 +261,7 @@ class ManaAttributeMods {
      * @param {number} value The numerical value (negative/positive) of the modifier
      */
     addManaControlMod(modId, value) {
-        this.#manaControlModsMap.set(modId, value);
+        this.manaControlModsMap.set(modId, value);
     }
 
     /**
@@ -218,7 +270,7 @@ class ManaAttributeMods {
      * @param {number} value The numerical value (negative/positive) of the modifier
      */
     addManaOverchargeMod(modId, value) {
-        this.#manaOverchargeModsMap.set(modId, value);
+        this.manaOverchargeModsMap.set(modId, value);
     }
 
     /**
@@ -226,7 +278,7 @@ class ManaAttributeMods {
      * @param {string} modId The identifier used to store the modifier.
      */
     removeManaCapMod(modId) {
-        this.#manaCapModsMap.delete(modId);
+        this.manaCapModsMap.delete(modId);
     }
 
     /**
@@ -234,7 +286,7 @@ class ManaAttributeMods {
      * @param {string} modId The identifier used to store the modifier.
      */
     removeManaRegenMod(modId) {
-        this.#manaRegenModsMap.delete(modId);
+        this.manaRegenModsMap.delete(modId);
     }
 
     /**
@@ -242,7 +294,7 @@ class ManaAttributeMods {
      * @param {string} modId The identifier used to store the modifier.
      */
     removeManaControlMod(modId) {
-        this.#manaControlModsMap.delete(modId);
+        this.manaControlModsMap.delete(modId);
     }
 
     /**
@@ -250,35 +302,35 @@ class ManaAttributeMods {
      * @param {string} modId The identifier used to store the modifier.
      */
     removeManaOverchargeMod(modId) {
-        this.#manaOverchargeModsMap.delete(modId);
+        this.manaOverchargeModsMap.delete(modId);
     }
 
     /**
      * The sum of all Mana Capacity modifiers
      */
     get sumManaCapMods() {
-        return _sumNumMap(this.#manaCapModsMap);
+        return _sumNumMap(this.manaCapModsMap);
     }
 
     /**
      * The sum of all Mana Regeneration modifiers
      */
     get sumManaRegenMods() {
-        return _sumNumMap(this.#manaRegenModsMap);
+        return _sumNumMap(this.manaRegenModsMap);
     }
 
     /**
      * The sum of all Mana Control modifiers
      */
     get sumManaControlMods() {
-        return _sumNumMap(this.#manaControlModsMap);
+        return _sumNumMap(this.manaControlModsMap);
     }
 
     /**
      * The sum of all Mana Overcharge modifiers
      */
     get sumManaOverchargeMods() {
-        return _sumNumMap(this.#manaOverchargeModsMap);
+        return _sumNumMap(this.manaOverchargeModsMap);
     }
 
     /**

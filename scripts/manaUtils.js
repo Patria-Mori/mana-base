@@ -11,7 +11,7 @@ class ManaUtils {
      * @returns The value of the flag.
      */
     static getManaActorFlag(actorId, flagKey) {
-        return this.getManaActorFlag(actorId, Mana.ID, flagKey);
+        return this.getActorFlag(actorId, Mana.ID, flagKey);
     }
 
     /**
