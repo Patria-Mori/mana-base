@@ -1,34 +1,68 @@
 /**
  * The Mana State class is used to manipulate the mana state of an actor, or 
  * to set/unset mana-state related flags.
+ * 
+ * Note that it does not provide automation for setting flags, that should be done elsewhere.
  */
 class ManaState {
 
+    /**
+     * Get the mana state value from an actor.
+     * @param {string} actorId The ID of the actor to get the mana state value from.
+     * @returns Mana value of the supplied actor.
+     */
     static getMana(actorId) {
         return ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_STATE);
     }
 
+    /**
+     * Set/update the mana state flag for an actor.
+     * @param {string} actorId The ID of the actor to set/update the mana state flag for.
+     * @returns Promise of updated actor document.
+     */
     static setMana(actorId, newManaVal) {
         return ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.MANA_STATE, newManaVal);
     }
 
-    static unsetMana(actorId) {
+    /**
+     * Unset the mana state flag for an actor, normally shouldn't need to be used.
+     * @param {string} actorId The ID of the actor to remove the mana state flag from.
+     * @returns Promise of updated actor document.
+     */
+    static _unsetMana(actorId) {
         return ManaUtils.unsetManaActorFlag(actorId, Mana.FLAGS.MANA_STATE);
     }
 
+    /**
+     * Safely additatively changes mana, meaning that the new value cannot exceed the mana cap value or go below 0.
+     * @param {string} actorId The ID of the actor to regenerate mana for.
+     * @param {number} manaDelta The amount to change the mana value by, negative to reduce mana.
+     * @returns Promise of updated actor document.
+     */
     static addManaSafe(actorId, manaDelta) {
+        return this.addManaSafe(actorId, manaDelta, false);
+    }
+
+    /**
+     * Safely additatively changes mana, meaning that the new value cannot exceed the maximum value or go below 0.
+     * @param {string} actorId The ID of the actor to regenerate mana for.
+     * @param {number} manaDelta The amount to change the mana value by, negative to reduce mana.
+     * @param {boolean} overcharge Boolean determining max capacity, 
+     * true for mana cap + overcharge cap, false for only mana cap 
+     * @returns Promise of updated actor document.
+     */
+    static addManaSafe(actorId, manaDelta, overcharge) {
         const newMana = this.getMana(actorId) + manaDelta;
-        const manaCap = this.getManaProps(actorId).manaCap;
-        return ((newMana > manaCap) ? this.setMana(actorId, manaCap) : this.setMana(actorId, newMana));
-    }
+        const minMana = 0;
+        const maxMana = overcharge ? manaAtts.manaCap + manaAtts.overchargeCap : manaAtts.manaCap; // Accounts for overcharge
 
-    static addMana(actorId, manaDelta) {
-        return this.setMana(actorId, (this.getMana(actorId) + manaDelta));
-    }
-
-    static removeMana(actorId, manaDelta) {
-        const newMana = this.getMana(actorId) - manaDelta;
-        return ((newMana < 0) ? this.setMana(0) : this.setMana(newMana));
+        if (newMana < minMana) { 
+            return this.setMana(actorId, minMana);
+        } else if (newMana > maxMana) {
+            return this.setMana(actorId, maxMana);
+        } else {
+            return this.setMana(actorId, newMana);
+        }
     }
 
     /**
@@ -39,23 +73,43 @@ class ManaState {
      * @param {number} ticks The number of "ticks" used to renerate mana.
      * @param {boolean} overcharge Boolean determining max capacity, 
      * true for mana cap + overcharge cap, false for only mana cap 
-     * @returns 
+     * @returns Promise of updated actor document.
      */
     static regenMana(actorId, ticks, overcharge) {
-        const manaAtts = this.getManaAttributes(actorId);
+        const manaAtts = this.getManaAttributeMods(actorId);
         const regMana = manaAtts.manaRegen * ticks;
         const newMana = this.getMana(actorId) + regMana;
         
+        // Max mana is either just mana capacity or mana capacity + mana overcharge capacity.
         const maxMana = overcharge ? manaAtts.manaCap + manaAtts.overchargeCap : manaAtts.manaCap;
+        // Set new mana to newMana value or maxMana value, whichever is lower.
         return newMana > maxMana ? this.setMana(actorId, maxMana) : this.setMana(actorId, newMana);
     }
 
     /**
      * Get Mana Attribute from a given actor.
+     * NB: This applies modifiers to the returned object.
      * @param {string} actorId The ID of the actor to get the mana attribute flag from.
      * @returns Mana Attribute object.
      */
     static getManaAttributes(actorId) {
+        const manaAtts = ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE);
+        const manaAttMods = ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE_MODS);
+
+        const newManaCap = manaAtts.manaCap + manaAttMods.sumManaCapMods;
+        const newOverchargeCap = manaAtts.overchargeCap + manaAttMods.sumManaOverchargeMods;
+        const newManaRegen = manaAtts.manaRegen + manaAttMods.sumManaRegenMods;
+        const newManaControl = manaAtts.manaControl + manaAttMods.sumManaControlMods;
+
+        return new ManaAttributeState(newManaCap, newOverchargeCap, newManaRegen, newManaControl);
+    }
+
+    /**
+     * Get Mana Attribute from a given actor, without mods applied
+     * @param {string} actorId The ID of the actor to get the mana attribute flag from.
+     * @returns Mana Attribute object.
+     */
+    static getBaseManaAttributes(actorId) {
         return ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE);
     }
 
