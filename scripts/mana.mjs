@@ -4,9 +4,10 @@ class Mana {
     static ID = 'pm-mana';
 
     static FLAGS = {
-        MANA: "pm-mana",
+        MANA: "mana",
         MANA_STATE: "mana-state",
-        MANA_PROPERTY: "mana-property"
+        MANA_ATTRIBUTE: "mana-attribute",
+        MANA_ATTRIBUTE_MODS: "mana-attribute-mods"
     }
 
     static TEMPLATES = {
@@ -199,9 +200,3 @@ class Mana {
 Hooks.once('devModeReady', ({ registerPackageDebugFlag }) => {
     registerPackageDebugFlag(Mana.ID);
 });
-
-class ManaData {
-
-    
-    
-}
