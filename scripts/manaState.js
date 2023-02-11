@@ -56,7 +56,7 @@ class ManaState {
         const minMana = 0;
         const maxMana = overcharge ? manaAtts.manaCap + manaAtts.overchargeCap : manaAtts.manaCap; // Accounts for overcharge
 
-        if (newMana < minMana) { 
+        if (newMana < minMana) {
             return this.setMana(actorId, minMana);
         } else if (newMana > maxMana) {
             return this.setMana(actorId, maxMana);
@@ -79,7 +79,7 @@ class ManaState {
         const manaAtts = this.getManaAttributeMods(actorId);
         const regMana = manaAtts.manaRegen * ticks;
         const newMana = this.getMana(actorId) + regMana;
-        
+
         // Max mana is either just mana capacity or mana capacity + mana overcharge capacity.
         const maxMana = overcharge ? manaAtts.manaCap + manaAtts.overchargeCap : manaAtts.manaCap;
         // Set new mana to newMana value or maxMana value, whichever is lower.
@@ -169,10 +169,11 @@ class ManaState {
  */
 class ManaAttributeState {
 
-    manaCap = 0;       // Mana capacity
-    overchargeCap = 0; // Overcharge mana capacity
-    manaRegen = 0;     // Mana regen per tick
-    manaControl = 0;   // Number of d8s to roll when manipulating mana
+    manaCap = 0;        // Mana capacity
+    manaX = 0;          // Partly determines Mana capacity, derived from class
+    overchargeCap = 0;  // Overcharge mana capacity
+    manaRegen = 0;      // Mana regen per tick
+    manaControl = 0;    // Number of d8s to roll when manipulating mana
 
     /**
      * Constructor for Mana Attribute class.
@@ -181,8 +182,9 @@ class ManaAttributeState {
      * @param {number} manaRegen     Mana regen value per tick
      * @param {number} manaControl   Number of d8s to roll when manipulating mana
      */
-    constructor(manaCap, overchargeCap, manaRegen, manaControl) {
+    constructor(manaCap, manaX, overchargeCap, manaRegen, manaControl) {
         this.manaCap = manaCap;
+        this.manaX = manaX;
         this.overchargeCap = overchargeCap;
         this.manaRegen = manaRegen;
         this.manaControl = manaControl;
@@ -193,6 +195,13 @@ class ManaAttributeState {
      */
     get manaCap() {
         return this.manaCap;
+    }
+
+    /**
+     * Getter for X value used for calculating mana capacity.
+     */
+    get manaX() {
+        return this.manaX;
     }
 
     /**
@@ -230,20 +239,23 @@ class ManaAttributeState {
  */
 class ManaAttributeMods {
 
-    manaCapModsMap = null;         // Map of modifiers that increase/decrease Mana Capacity
-    manaRegenModsMap = null;       // Map of modifiers that increase/decrease Mana Regeneration
-    manaControlModsMap = null;     // Map of modifiers that increase/decrease Mana Control Dice
-    manaOverchargeModsMap = null;  // Map of modifiers that increase/decrease Mana Overcharge Capacity
+    manaCapModsMap = null;          // Map of modifiers that increase/decrease Mana Capacity
+    manaXModsMap = null;            // Map of modifiers that increase/decreate Mana X Value
+    manaRegenModsMap = null;        // Map of modifiers that increase/decrease Mana Regeneration
+    manaControlModsMap = null;      // Map of modifiers that increase/decrease Mana Control Dice
+    manaOverchargeModsMap = null;   // Map of modifiers that increase/decrease Mana Overcharge Capacity
 
     /**
      * Mana Attribute Mods constructor, takes in arrays of String:Number pairs.
-     * @param {Array} manaCapModsArr        Array of modifers that increase/decrease Mana Capacity
-     * @param {Array} manaRegenModsArr      Array of modifers that increase/decrease Mana Regeneration
-     * @param {Array} manaControlModsArr    Array of modifers that increase/decrease Mana Control Dice
-     * @param {Array} manaOverchargeModsArr Array of modifers that increase/decrease Mana Overcharge Capacity
+     * @param {Array} manaCapModsArr        Array of modifiers that increase/decrease Mana Capacity
+     * @param {Array} manaXModsArr          Array of modifiers that increase/decrease Mana X Value
+     * @param {Array} manaRegenModsArr      Array of modifiers that increase/decrease Mana Regeneration
+     * @param {Array} manaControlModsArr    Array of modifiers that increase/decrease Mana Control Dice
+     * @param {Array} manaOverchargeModsArr Array of modifiers that increase/decrease Mana Overcharge Capacity
      */
     constructor(manaCapModsArr, manaRegenModsArr, manaControlModsArr, manaOverchargeModsArr) {
         this.manaCapModsMap = new Map(manaCapModsArr);
+        this.manaXModsMap = new Map(manaXModsArr);
         this.manaRegenModsMap = new Map(manaRegenModsArr);
         this.manaControlModsMap = new Map(manaControlModsArr);
         this.manaOverchargeModsMap = new Map(manaOverchargeModsArr);
@@ -255,12 +267,18 @@ class ManaAttributeMods {
     static Builder = class {
 
         #manaCapModsArr = [];
+        #manaXModsArr = [];
         #manaRegenModsArr = [];
         #manaControlModsArr = [];
         #manaOverchargeModsArr = [];
-        
+
         setCapExtras(manaCapModsArr) {
             this.#manaCapModsArr = manaCapModsArr;
+            return this;
+        }
+
+        setXExtras(manaXModsArr) {
+            this.#manaXModsArr = manaXModsArr;
             return this;
         }
 
@@ -282,6 +300,7 @@ class ManaAttributeMods {
         build() {
             const manaAttributeMods = new ManaAttributeMods(
                 this.#manaCapModsArr,
+                this.#manaXModsArr,
                 this.#manaRegenModsArr,
                 this.#manaControlModsArr,
                 this.#manaOverchargeModsArr
@@ -298,6 +317,15 @@ class ManaAttributeMods {
      */
     addManaCapMod(modId, value) {
         this.manaCapModsMap.set(modId, value);
+    }
+
+    /**
+     * Adds new Mana X modifier to the map.
+     * @param {string} modId The identifier used to store the modifier.
+     * @param {number} value The numerical value (negative/positive) of the modifier
+     */
+    addManaXMod(modId, value) {
+        this.manaXModsMap.set(modId, value);
     }
 
     /**
@@ -336,6 +364,14 @@ class ManaAttributeMods {
     }
 
     /**
+     * Removes a Mana X modifier if it exists in the map.
+     * @param {string} modId The identifier used to store the modifier.
+     */
+    removeManaXMod(modId) {
+        this.manaXModsMap.delete(modId);
+    }
+
+    /**
      * Removes a Mana Regeneration modifier if it exists in the map.
      * @param {string} modId The identifier used to store the modifier.
      */
@@ -364,6 +400,13 @@ class ManaAttributeMods {
      */
     get sumManaCapMods() {
         return _sumNumMap(this.manaCapModsMap);
+    }
+
+    /**
+     * The sum of all Mana X modifiers
+     */
+    get sumManaXMods() {
+        return _sumNumMap(this.manaXModsMap);
     }
 
     /**
