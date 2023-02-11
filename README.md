@@ -14,8 +14,6 @@ That script is divded into sections,
 
  - //"API" represents somewhat mature utility functions I might move into the real module
 
- - //MISC STUFF should mostly be ignored
-
 ## Quick Rundown of Module plans:
 
 At this moment I'm planning on developing 3-4 different Mana modules. I want to develop them individually to support good modifiability and separate concerns. This is up for discussion if somebody else wants to participate in the core development.
