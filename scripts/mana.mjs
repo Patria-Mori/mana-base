@@ -138,28 +138,34 @@ Hooks.once('devModeReady', ({ registerPackageDebugFlag }) => {
 
 // Non-final
 Hooks.on("renderActorSheet", function (dndSheet, html) {
+    const manaFlags = dndSheet.object.flags[Mana.ID];
+    const manaId = Mana.ID;
+    const curMana = manaFlags[Mana.FLAGS.MANA_STATE];
+    const maxMana = manaFlags[Mana.FLAGS.MANA_ATTRIBUTE].manaCap;
+    const curManaName = "flags." + manaId + "." + Mana.FLAGS.MANA_STATE;
+    const maxManaName = "flags." + manaId + "." + Mana.FLAGS.MANA_ATTRIBUTE + ".manaCap";
+
     const spellbookPaneRaw = `
-    <div class="mana-box">
-        <h2 class="mana-label">Mana:</h2>
-        <input class="mana-current" type="number" name="TODO" value="0" data-dtype="Number" placeholder="0" title="Current Mana">
-         / 
-        <input class="mana-max" type="number" name="TODO" value="0" data-dtype="Number" placeholder="0" title="Maximum Mana Capacity">
-    </div>`; //TODO: Update name and value attributes to be correct
+    <div class="${manaId}-box-spell">
+        <h2 class="${manaId}-label-spell">Mana:</h2>
+        <input class="${manaId}-current" type="number" name="${curManaName}" value="${curMana}" data-dtype="Number" placeholder="0" title="Current Mana" maxlength="3">
+        <span class="seperator"> / </span>
+        <input class="${manaId}-max" type="number" name="${maxManaName}" value="${maxMana}" data-dtype="Number" placeholder="0" title="Maximum Mana Capacity" maxlength="3">
+    </div>`;
     const spellbookPaneHtml = htmlToElement(spellbookPaneRaw);
 
     const inventoryFiltersDiv = html[0].querySelectorAll(".spellbook .inventory-filters");
     inventoryFiltersDiv[0].prepend(spellbookPaneHtml);
 
-    // The below code injects into the Attributes pane, currently hijacking resources styling, which is buggy and bad.
     const attributePaneRaw = `
-    <li class="resource hidden">
-        <h4 class="resource-name">
-            <input name="system.resources.primary.label" type="text" value="Mana" placeholder="Mana">
+    <li class="${Mana.ID}-resource">
+        <h4 class="${Mana.ID}-label-attribute">
+            Mana
         </h4>
-        <div class="resource-value multiple">
-            <input class="res-value" type="text" name="TODO" value="" data-dtype="Number" placeholder="0" title="Current Mana" maxlength="3">
-            <span class="sep"> / </span>
-            <input class="res-max" type="text" name="TODO" value="" data-dtype="Number" placeholder="0" title="Max Mana" maxlength="3">
+        <div class="${Mana.ID}-box-attribute">
+            <input class="${Mana.ID}-current" type="text" name="${curManaName}" value="${curMana}" data-dtype="Number" placeholder="0" title="Current Mana" maxlength="3">
+            <span class="seperator"> / </span>
+            <input class="${Mana.ID}-max" type="text" name="${maxManaName}" value="${maxMana}" data-dtype="Number" placeholder="0" title="Maximum Mana Capacity" maxlength="3">
         </div>
     </li> `;
     const attributePaneHtml = htmlToElement(attributePaneRaw);
@@ -168,6 +174,11 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
     attributesResource[0].prepend(attributePaneHtml);
 });
 
+/**
+ * Utility function to convert a string of HTML code to an element.
+ * @param {string} html 
+ * @returns 
+ */
 function htmlToElement(html) {
     var template = document.createElement('template');
     html = html.trim(); // Never return a text node of whitespace as the result
