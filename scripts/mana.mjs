@@ -148,15 +148,16 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
     const spellbookPaneRaw = `
     <div class="${manaId}-box-spell">
         <h2 class="${manaId}-label-spell">Mana:</h2>
-        <input class="${manaId}-current" type="number" name="${curManaName}" value="${curMana}" data-dtype="Number" placeholder="0" title="Current Mana" maxlength="3">
+        <input id="${manaId}-current" type="number" name="${curManaName}" value="${curMana}" data-dtype="Number" placeholder="0" title="Current Mana" maxlength="3">
         <span class="seperator"> / </span>
-        <input class="${manaId}-max" type="number" name="${maxManaName}" value="${maxMana}" data-dtype="Number" placeholder="0" title="Maximum Mana Capacity" maxlength="3">
+        <input id="${manaId}-max" type="number" name="${maxManaName}" value="${maxMana}" data-dtype="Number" placeholder="0" title="Maximum Mana Capacity" maxlength="3">
     </div>`;
     const spellbookPaneHtml = htmlToElement(spellbookPaneRaw);
 
     const inventoryFiltersDiv = html[0].querySelectorAll(".spellbook .inventory-filters");
     inventoryFiltersDiv[0].prepend(spellbookPaneHtml);
 
+    /*
     const attributePaneRaw = `
     <li class="${Mana.ID}-resource">
         <h4 class="${Mana.ID}-label-attribute">
@@ -168,10 +169,10 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
             <input class="${Mana.ID}-max" type="text" name="${maxManaName}" value="${maxMana}" data-dtype="Number" placeholder="0" title="Maximum Mana Capacity" maxlength="3">
         </div>
     </li> `;
-    const attributePaneHtml = htmlToElement(attributePaneRaw);
+    const attributePaneHtml = htmlToElement(attributePaneRaw); 
 
-    const attributesResource = html[0].querySelectorAll(".attributes .resources");
-    attributesResource[0].prepend(attributePaneHtml);
+    const attributesResource = html[0].querySelectorAll(".attributes .resources"); */
+    // attributesResource[0].prepend(attributePaneHtml); TODO: This is currently bugged for unknown reasons: suspect Tidy5eSheets does some things to li items in that div
 });
 
 /**

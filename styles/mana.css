@@ -1,0 +1,39 @@
+.pm-mana-box-spell {
+    display: flex;
+    height: 25px;
+    align-items: center;
+}
+
+.pm-mana-label-spell {
+    font-family: var(--t5e-modesto);
+    font-size: 25px;
+    height: 25px;
+}
+
+#pm-mana-current {
+    font-family: var(--t5e-modesto);
+    height: 25px;
+    width: 30px;
+    font-size: 25px;
+    min-width: 10px;
+    text-align: end;
+}
+
+.seperator {
+    font-family: var(--t5e-modesto);
+    font-size: 23px;
+    height: 25px;
+}
+
+#pm-mana-max {
+    font-family: var(--t5e-modesto);
+    height: 25px;
+    width: 35px;
+    font-size: 25px;
+    text-align: start;
+}
+
+.inventory-filters {
+    display: flex;
+    justify-content: space-between;
+}
