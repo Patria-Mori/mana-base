@@ -155,19 +155,24 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
     const inventoryFiltersDiv = html[0].querySelectorAll(".spellbook .inventory-filters");
     inventoryFiltersDiv[0].prepend(spellbookPaneHtml);
 
-    /*
     const attributePaneRaw = `
-    <li class="${Mana.ID}-resource">
-        <h4 class="${Mana.ID}-label-attribute">
-            Mana
-        </h4>
-        <div class="${Mana.ID}-box-attribute">
-            <input class="${Mana.ID}-current" type="text" name="${curManaName}" value="${curMana}" data-dtype="Number" placeholder="0" title="Current Mana" maxlength="3">
-            <span class="seperator"> / </span>
-            <input class="${Mana.ID}-max" type="text" name="${maxManaName}" value="${maxMana}" data-dtype="Number" placeholder="0" title="Maximum Mana Capacity" maxlength="3">
-        </div>
-    </li> `;
-    const attributePaneHtml = htmlToElement(attributePaneRaw); */
+    <div class="${manaId}-box-attribute">
+        <ul class="${manaId}-list-attribute">
+            <li class="${manaId}-resource">
+                <h4 class="${manaId}-label-attribute">Mana</h4>
+                <div class="${manaId}-box-attribute">
+                    <input id="${manaId}-current-attribute" type="text" value="${curMana}" data-dtype="Number" placeholder="0" title="Current Mana" maxlength="5">
+                    <span class="seperator"> / </span>
+                    <input id="${manaId}-max-attribute" type="text" value="${maxMana}" data-dtype="Number" placeholder="0" title="Maximum Mana Capacity" maxlength="5">
+                </div>
+            </li>
+        </ul>
+    </div> `;
+    const attributePaneHtml = htmlToElement(attributePaneRaw); 
+
+    const attributePaneDiv = html[0].querySelectorAll(".attributes .center-pane");
+    attributePaneDiv[0].prepend(attributePaneHtml);
+    Mana.log(true, attributePaneDiv); //TODO: Remove
 
     // Add event listeners to the input fields
     const currentInput = html.find(`#${manaId}-current`);
@@ -177,6 +182,16 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
 
     const maxInput = html.find(`#${manaId}-max`);
     maxInput.on("change", (event) => {
+        ManaState.setMana(dndSheet.object._id, lazyMana(curMana, event.target.value));
+    });
+
+    const currentInputAtt = html.find(`#${manaId}-current-attribute`);
+    currentInputAtt.on("change", (event) => {
+        ManaState.setMana(dndSheet.object._id, lazyMana(curMana, event.target.value));
+    });
+
+    const maxInputAtt = html.find(`#${manaId}-max-attribute`);
+    maxInputAtt.on("change", (event) => {
         ManaState.setMana(dndSheet.object._id, lazyMana(curMana, event.target.value));
     });
 });
@@ -197,7 +212,7 @@ function htmlToElement(html) {
  * Calculates the "lazy mana" value. 
  * If lazy mana is just a number it will return that number.
  * If lazy mana contains a + or - it will add or subtract that value from the old mana value.
- * The lower bound is 0. The upper bound is 999.
+ * The lower bound is 0.
  *
  * @param {number} oldMana - The old mana value.
  * @param {string} lazyMana - The lazy mana value.

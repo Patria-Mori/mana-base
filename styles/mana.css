@@ -10,6 +10,26 @@
     height: 25px;
 }
 
+.pm-mana-box-attribute {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 4px;
+}
+
+.pm-mana-label-attribute {
+    text-align: center;
+    font-family: var(--t5e-modesto);
+    font-size: 25px;
+    height: 25px;
+}
+
+.seperator {
+    font-family: var(--t5e-modesto);
+    font-size: 23px;
+    height: 25px;
+}
+
 #pm-mana-current {
     font-family: var(--t5e-modesto);
     height: 25px;
@@ -17,12 +37,6 @@
     font-size: 25px;
     min-width: 10px;
     text-align: end;
-}
-
-.seperator {
-    font-family: var(--t5e-modesto);
-    font-size: 23px;
-    height: 25px;
 }
 
 #pm-mana-max {
@@ -33,7 +47,23 @@
     text-align: start;
 }
 
-.inventory-filters {
+#pm-mana-current-attribute {
+    font-family: var(--t5e-modesto);
+    height: 25px;
+    max-width: 3.5ch;
+    font-size: 25px;
+    text-align: end;
+}
+
+#pm-mana-max-attribute {
+    font-family: var(--t5e-modesto);
+    height: 25px;
+    max-width: 3.5ch;
+    font-size: 25px;
+    text-align: start;
+}
+
+.tab.spellbook .inventory-filters {
     display: flex;
     justify-content: space-between;
 }
