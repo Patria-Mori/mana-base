@@ -15,6 +15,7 @@
     },
     "scripts": [
         "scripts/mana.mjs",
+        "scripts/manaHooks.js",
         "scripts/manaUtils.js",
         "scripts/manaState.js",
         "scripts/manaConfig.js"
