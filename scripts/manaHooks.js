@@ -38,7 +38,9 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
     const spellbookPaneHtml = htmlToElement(spellbookPaneRaw);
 
     const inventoryFiltersDiv = html[0].querySelectorAll(".spellbook .inventory-filters");
-    inventoryFiltersDiv[0].prepend(spellbookPaneHtml);
+    inventoryFiltersDiv[0].prepend(spellbookPaneHtml);              // Adds the mana "box" to the inventory filters div.
+    inventoryFiltersDiv[0].style.display = "flex";                  // Makes the inventory filters div a flexbox.
+    inventoryFiltersDiv[0].style.justifyContent = "space-between";  // Makes the mana box div and the ineventory filter div align properly.
 
     const attributePaneRaw = `
     <div class="${manaId}-box-attribute">

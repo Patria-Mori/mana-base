@@ -62,8 +62,3 @@
     font-size: 25px;
     text-align: start;
 }
-
-.tab.spellbook .inventory-filters {
-    display: flex;
-    justify-content: space-between;
-}
