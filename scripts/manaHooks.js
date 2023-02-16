@@ -2,8 +2,27 @@ Hooks.once('devModeReady', ({ registerPackageDebugFlag }) => {
     registerPackageDebugFlag(Mana.ID);
 });
 
+
+Hooks.on("init", async function () {
+    game.settings.register(Mana.ID, "showMana", { 
+        name: "Show mana in character sheets",
+        hint: "If enabled, mana will be shown in character sheets.",
+        scope: "client",
+        config: true,
+        requiresReload: true,
+        type: Boolean,
+        default: true,
+    });
+});
+
+// Render hooks
+
 // Non-final TODO: Extract HTML to handlebars template.
 Hooks.on("renderActorSheet", function (dndSheet, html) {
+    if (game.settings.get(Mana.ID, "showMana") === false) {
+        return;
+    }
+
     const manaFlags = dndSheet.object.flags[Mana.ID];
     const manaId = Mana.ID;
     const curMana = manaFlags[Mana.FLAGS.MANA_STATE];
