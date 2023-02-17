@@ -117,6 +117,7 @@ class ManaState {
     /**
      * Set Mana Attribute for a given actor.
      * @param {string} actorId The ID of the actor to set the mana attribute flag for.
+     * @param {ManaAttributeState} newManaAttributes The new mana attribute state to set.
      * @returns Promise of updated actor document.
      */
     static setManaAttributes(actorId, newManaAttributes) {
@@ -144,6 +145,7 @@ class ManaState {
     /**
      * Set Mana Attribute Mods for a given actor.
      * @param {string} actorId The ID of the actor to set the mana attribute mods flag for.
+     * @param {ManaAttributeMods} newManaAttributeMods The new mana attribute mods to set.
      * @returns Promise of updated actor document.
      */
     static setManaAttributeMods(actorId, newManaAttributeMods) {

@@ -28,7 +28,7 @@ class Mana {
         let xValue = ManaConfig.findXValueApproximation(actorId);
 
         //TODO: Account for "extra" value somewhere.
-        return this.calcualteManaCap(wisMod, profBonus, xValue, 0);
+        return this.calculateManaCap(wisMod, profBonus, xValue, 0);
     }
 
     /**
@@ -69,7 +69,7 @@ class Mana {
         var extra = 0;
 
         // TODO: Standardise this and make it non-hard coded (probably some sort of map I guess?)
-        if (this.findOriginalClassIdentifier(actorId) === "sorcerer") {
+        if (ManaConfig.findOriginalClassIdentifier(actorId) === "sorcerer") {
             extra = 10;
         }
         
@@ -85,7 +85,7 @@ class Mana {
      * @param {number} extra Flat extra mana a character may have for whatever reason (again, I blame Lori).
      * @returns {number} Integer value of maximum mana capacity, not including overload.
      */
-    static calcualteManaCap(wisMod, profBonus, xValue, extra) {
+    static calculateManaCap(wisMod, profBonus, xValue, extra) {
         return ((wisMod + 1) * profBonus * xValue) + extra;
     }
 
@@ -120,6 +120,35 @@ class Mana {
      */
     static calculateOverchargeCap(chaMod, extra) {
         return (chaMod * 3) + extra;
+    }
+
+    /**
+     * Utility function that updates the mana attributes of a character.
+     * @param {String} actorId The ID of the actor we want to update.
+     * @returns Promise that resolves to the updated actor.
+     */
+    static updateManaAttributes(actorId) {
+        const manaCap = this.calculateCharacterManaCap(actorId);
+        const manaX = ManaConfig.findXValueApproximation(actorId);
+        const manaRegen = this.calculateCharacterManaRegen(actorId);
+        const manaControlDice = this.calculateCharacterManaControlDice(actorId);
+        const overchargeCap = this.calculateCharacterOverchargeCap(actorId);
+
+        const attributeState = new ManaAttributeState(manaCap, manaX, overchargeCap, manaRegen, manaControlDice);
+
+        return ManaState.setManaAttributes(actorId, attributeState);
+    }
+
+    /**
+     * Utility function that initialises the mana states of a character.
+     * @param {String} actorId The ID of the actor we want to initialise mana states for. 
+     * @returns Promise that resolves to the updated actor.
+     */
+    static initialiseManaOnActor(actorId) {
+        this.updateManaAttributes(actorId);
+        const manaAttMods = new ManaAttributeMods.Builder().build();
+        ManaState.setManaAttributeMods(actorId, manaAttMods);
+        return ManaState.setMana(actorId, 0);
     }
 
     static log(force, ...args) {  

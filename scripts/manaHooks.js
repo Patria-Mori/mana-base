@@ -16,10 +16,38 @@ Hooks.on("init", async function () {
 });
 
 // Render hooks
+/**
+ * I've run into an issue with using this method for detecting changes:
+ * It doesn't always fire when I need it to.
+ * Sometimes it will fire, like with abilities, but it doesn't seem to fire when prof bonus changes, or level changes.
+ * Thus, to remedy this problem, I think the best way is to store a state of the actor's relevant attributes and stats,
+ * and then compare that state to the current state of the actor to see if anything has changed.
+ * 
+ * The things I need to store are:
+ * - Ability scores (wis, int, cha)
+ * - Proficiency bonus
+ * - Class
+ */
+Hooks.on("updateActor", function (actor, data, options, userId) {
+    if (game.settings.get(Mana.ID, "showMana") === false) {
+        return;
+    }
+
+    if (data.system?.abilities) { // This will only be true if the update contains a change to ability scores.
+        Mana.updateManaAttributes(actor._id);
+    }
+});
 
 // Non-final TODO: Extract HTML to handlebars template.
 Hooks.on("renderActorSheet", function (dndSheet, html) {
     if (game.settings.get(Mana.ID, "showMana") === false) {
+        return;
+    }
+
+    const actorId = dndSheet.object._id;
+    if (ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_STATE) === undefined) {
+        // If the actor doesn't have a mana state flag, we need to create it and related mana flags.
+        Mana.initialiseManaOnActor(actorId);
         return;
     }
 
@@ -63,7 +91,7 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
     const attributePaneDiv = html[0].querySelectorAll(".attributes .center-pane");
     attributePaneDiv[0].prepend(attributePaneHtml);
 
-    const actorId = dndSheet.object._id;
+    
     // Add event listeners to the input fields
     const currentInput = html.find(`#${manaId}-current`);
     currentInput.on("change", (event) => {

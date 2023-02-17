@@ -36,7 +36,9 @@ class ManaConfig {
         classXValueMap.set('wizard',    5);
 
         const classIdentifier = this.findOriginalClassIdentifier(actorId);
-        return classXValueMap.get(classIdentifier);
+        const xValue = classXValueMap.get(classIdentifier) ? classXValueMap.get(classIdentifier) : 1; 
+        // Default to 1 if we can't find a class
+        return xValue;
     }
 
     /**
