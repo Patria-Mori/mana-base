@@ -54,31 +54,40 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
                 </div>
             </li>
         </ul>
+        <button type="button" class="${manaId}-regen-button flex0" title="Regen Mana (1 tick)">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </button>
     </div> `;
     const attributePaneHtml = htmlToElement(attributePaneRaw); 
 
     const attributePaneDiv = html[0].querySelectorAll(".attributes .center-pane");
     attributePaneDiv[0].prepend(attributePaneHtml);
 
+    const actorId = dndSheet.object._id;
     // Add event listeners to the input fields
     const currentInput = html.find(`#${manaId}-current`);
     currentInput.on("change", (event) => {
-        ManaState.setMana(dndSheet.object._id, lazyMana(curMana, event.target.value));
+        ManaState.setMana(actorId, lazyMana(curMana, event.target.value));
     });
 
     const maxInput = html.find(`#${manaId}-max`);
     maxInput.on("change", (event) => {
-        ManaState.setMana(dndSheet.object._id, lazyMana(curMana, event.target.value));
+        ManaState.setMana(actorId, lazyMana(curMana, event.target.value));
     });
 
     const currentInputAtt = html.find(`#${manaId}-current-attribute`);
     currentInputAtt.on("change", (event) => {
-        ManaState.setMana(dndSheet.object._id, lazyMana(curMana, event.target.value));
+        ManaState.setMana(actorId, lazyMana(curMana, event.target.value));
     });
 
     const maxInputAtt = html.find(`#${manaId}-max-attribute`);
     maxInputAtt.on("change", (event) => {
-        ManaState.setMana(dndSheet.object._id, lazyMana(curMana, event.target.value));
+        ManaState.setMana(actorId, lazyMana(curMana, event.target.value));
+    });
+
+    const regenButton = html.find(`.${manaId}-regen-button`);
+    regenButton.on("click", () => {
+        ManaState.regenMana(actorId, 1, true);
     });
 });
 

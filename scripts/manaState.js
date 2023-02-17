@@ -76,7 +76,7 @@ class ManaState {
      * @returns Promise of updated actor document.
      */
     static regenMana(actorId, ticks, overcharge) {
-        const manaAtts = this.getManaAttributeMods(actorId);
+        const manaAtts = this.getManaAttributes(actorId);
         const regMana = manaAtts.manaRegen * ticks;
         const newMana = this.getMana(actorId) + regMana;
 
@@ -94,14 +94,15 @@ class ManaState {
      */
     static getManaAttributes(actorId) {
         const manaAtts = ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE);
-        const manaAttMods = ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE_MODS);
+        const manaAttMods = ManaAttributeMods.fromJSON(ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE_MODS));
 
         const newManaCap = manaAtts.manaCap + manaAttMods.sumManaCapMods;
+        const newManaX = manaAtts.manaX + manaAttMods.sumManaXMods;
         const newOverchargeCap = manaAtts.overchargeCap + manaAttMods.sumManaOverchargeMods;
         const newManaRegen = manaAtts.manaRegen + manaAttMods.sumManaRegenMods;
         const newManaControl = manaAtts.manaControl + manaAttMods.sumManaControlMods;
 
-        return new ManaAttributeState(newManaCap, newOverchargeCap, newManaRegen, newManaControl);
+        return new ManaAttributeState(newManaCap, newManaX, newOverchargeCap, newManaRegen, newManaControl);
     }
 
     /**
@@ -253,12 +254,26 @@ class ManaAttributeMods {
      * @param {Array} manaControlModsArr    Array of modifiers that increase/decrease Mana Control Dice
      * @param {Array} manaOverchargeModsArr Array of modifiers that increase/decrease Mana Overcharge Capacity
      */
-    constructor(manaCapModsArr, manaRegenModsArr, manaControlModsArr, manaOverchargeModsArr) {
+    constructor(manaCapModsArr, manaXModsArr, manaRegenModsArr, manaControlModsArr, manaOverchargeModsArr) {
         this.manaCapModsMap = new Map(manaCapModsArr);
         this.manaXModsMap = new Map(manaXModsArr);
         this.manaRegenModsMap = new Map(manaRegenModsArr);
         this.manaControlModsMap = new Map(manaControlModsArr);
         this.manaOverchargeModsMap = new Map(manaOverchargeModsArr);
+    }
+
+    /**
+     * Translates a JSON object into a ManaAttributeMods object.
+     */
+    static fromJSON(manaAttJsonObj) {
+        const manaCapModsArr = manaAttJsonObj.manaCapModsArr ? manaAttJsonObj.manaCapModsArr : [];
+        const manaXModsArr = manaAttJsonObj.manaXModsArr ? manaAttJsonObj.manaXModsArr : [];
+        const manaRegenModsArr = manaAttJsonObj.manaRegenModsArr ? manaAttJsonObj.manaRegenModsArr : [];
+        const manaControlModsArr = manaAttJsonObj.manaControlModsArr ? manaAttJsonObj.manaControlModsArr : [];
+        const manaOverchargeModsArr = manaAttJsonObj.manaOverchargeModsArr ? manaAttJsonObj.manaOverchargeModsArr : [];
+        return new ManaAttributeMods(
+            manaCapModsArr, manaXModsArr, manaRegenModsArr, manaControlModsArr, manaOverchargeModsArr
+        );
     }
 
     /**
@@ -430,17 +445,17 @@ class ManaAttributeMods {
         return _sumNumMap(this.manaOverchargeModsMap);
     }
 
-    /**
+}
+
+/**
      * Utility method that sums the numbers in a X:number map
      * @param {Map} numMap A map with numbers as values.
      * @returns Sum of all numbers in the map
      */
-    static _sumNumMap(numMap) {
-        let sum = 0;
-        for (let mod of numMap.values()) {
-            sum += mod;
-        }
-        return sum;
+function _sumNumMap(numMap) {
+    let sum = 0;
+    for (let mod of numMap.values()) {
+        sum += mod;
     }
-
+    return sum;
 }
