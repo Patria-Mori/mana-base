@@ -4,12 +4,12 @@ class Mana {
     static ID = 'mana-base';
 
     static FLAGS = {
-        // TODO: Remove the "mana-" portion from the MANA_X flags, it's redundant. Also rename the flags.
         MANA: "mana",
-        MANA_STATE: "mana-state",
-        MANA_ATTRIBUTE: "mana-attribute",
-        MANA_ATTRIBUTE_MODS: "mana-attribute-mods", // Deprecated
-        MANA_RELATED_ATTRIBUTES: "_related-attributes",
+        STATE: "state",
+        ATTRIBUTES: "attributes",
+        ATTRIBUTE_MODS: "mana-attribute-mods", // Deprecated
+        // The flags below are considered "internal".
+        DEPENDENCY_ATTRIBUTES: "_dependency-attributes", // Attributes that mana attributes are dependent on.
         EXTENDED_MANA_UI: "_extended-UI"
     }
 

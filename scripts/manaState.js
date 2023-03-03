@@ -12,7 +12,7 @@ class ManaState {
      * @returns Mana value of the supplied actor.
      */
     static getMana(actorId) {
-        return ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_STATE);
+        return ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.STATE);
     }
 
     /**
@@ -21,7 +21,7 @@ class ManaState {
      * @returns Promise of updated actor document.
      */
     static setMana(actorId, newManaVal) {
-        return ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.MANA_STATE, newManaVal);
+        return ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.STATE, newManaVal);
     }
 
     /**
@@ -30,7 +30,7 @@ class ManaState {
      * @returns Promise of updated actor document.
      */
     static _unsetMana(actorId) {
-        return ManaUtils.unsetManaActorFlag(actorId, Mana.FLAGS.MANA_STATE);
+        return ManaUtils.unsetManaActorFlag(actorId, Mana.FLAGS.STATE);
     }
 
     /**
@@ -92,7 +92,7 @@ class ManaState {
      * @returns Mana Attribute object.
      */
     static getManaAttributes(actorId) {
-        return ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE);
+        return ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.ATTRIBUTES);
     }
 
     /**
@@ -101,7 +101,7 @@ class ManaState {
      * @returns Mana Attribute object.
      */
     static getBaseManaAttributes(actorId) {
-        return ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE);
+        return ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.ATTRIBUTES);
     }
 
     /**
@@ -111,7 +111,7 @@ class ManaState {
      * @returns Promise of updated actor document.
      */
     static setManaAttributes(actorId, newManaAttributes) {
-        return ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE, newManaAttributes);
+        return ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.ATTRIBUTES, newManaAttributes);
     }
 
     /**
@@ -120,7 +120,7 @@ class ManaState {
      * @returns Promise of updated actor document.
      */
     static unsetManaAttributes(actorId) {
-        return ManaUtils.unsetManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE);
+        return ManaUtils.unsetManaActorFlag(actorId, Mana.FLAGS.ATTRIBUTES);
     }
 
     /**
@@ -131,7 +131,7 @@ class ManaState {
      * @deprecated Use getManaAttributes instead.
      */
     static getManaAttributeMods(actorId) {
-        return ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE_MODS);
+        return ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.ATTRIBUTE_MODS);
     }
 
     /**
@@ -143,7 +143,7 @@ class ManaState {
      * @deprecated Use setManaAttributes instead.
      */
     static setManaAttributeMods(actorId, newManaAttributeMods) {
-        return ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE_MODS, newManaAttributeMods);
+        return ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.ATTRIBUTE_MODS, newManaAttributeMods);
     }
 
     /**
@@ -152,7 +152,7 @@ class ManaState {
      * @returns Promise of updated actor document.
      */
     static unsetManaAttributeMods(actorId) {
-        return ManaUtils.unsetManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE_MODS);
+        return ManaUtils.unsetManaActorFlag(actorId, Mana.FLAGS.ATTRIBUTE_MODS);
     }
 
 }

@@ -12,17 +12,9 @@ TODO
 
 ## Explanation of features (OLD)
 
+TODO: Update
+
  - [**Mana API**]: The API can be used by other modules to easily modify their mana, set certain conditions etc. In short is the "official" way for other modules to manipulate a characters mana-related functionality, such as removing or adding mana, etc.
  - [**Mana Config**]: Defines random stuff like which class has what X value, what the names of the circles are, maybe even how mana calculations are defined.
  - [**Character-side automation**]: Internal sub-module, responsible for calculating lots of useful mana-related things, such as mana capacity, regen per tick, etc. Will implement several utility functions which make it easy to restore mana when short/long-resting, etc.
  - [**Character Mana state**]: Class/similar that stores mana stuff, like their current mana, mana crystals, and basically anything "stateful".
-
-## Quick Rundown of Module plans:
-
-At this moment I'm planning on developing 3-4 different Mana modules. I want to develop them individually to support good modifiability and separate concerns. This is up for discussion if somebody else wants to participate in the core development.
-
-
-Names are not final. Some of the modules have multiple packages/js files, which are briefly explained and not named strictly.
-
-**mana-base/mana-core**: The core module, will supply *some* automation, but most of it is limited to characters and mana regen. Mainly used as a foundation.
- 

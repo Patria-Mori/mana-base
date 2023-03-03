@@ -33,7 +33,7 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
     const actorId = dndSheet.object._id;
     addOrUpdateManaRelevantAtts(actorId);
 
-    if (ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_STATE) === undefined) {
+    if (ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.STATE) === undefined) {
         // If the actor doesn't have a mana state flag, we need to create it and related mana flags.
         Mana.initialiseManaOnActor(actorId);
         return;
@@ -43,14 +43,14 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
     const manaId = Mana.ID;
 
     // Mana Attributes
-    const manaCap = manaFlags[Mana.FLAGS.MANA_ATTRIBUTE].manaCap;
-    const manaX = manaFlags[Mana.FLAGS.MANA_ATTRIBUTE].manaX;
-    const overchargeCap = manaFlags[Mana.FLAGS.MANA_ATTRIBUTE].overchargeCap;
-    const manaRegen = manaFlags[Mana.FLAGS.MANA_ATTRIBUTE].manaRegen;
-    const manaControl = manaFlags[Mana.FLAGS.MANA_ATTRIBUTE].manaControl;
+    const manaCap = manaFlags[Mana.FLAGS.ATTRIBUTES].manaCap;
+    const manaX = manaFlags[Mana.FLAGS.ATTRIBUTES].manaX;
+    const overchargeCap = manaFlags[Mana.FLAGS.ATTRIBUTES].overchargeCap;
+    const manaRegen = manaFlags[Mana.FLAGS.ATTRIBUTES].manaRegen;
+    const manaControl = manaFlags[Mana.FLAGS.ATTRIBUTES].manaControl;
     // Mana Pane Values
-    const curMana = manaFlags[Mana.FLAGS.MANA_STATE];
-    const maxMana = manaFlags[Mana.FLAGS.MANA_ATTRIBUTE].manaCap;
+    const curMana = manaFlags[Mana.FLAGS.STATE];
+    const maxMana = manaFlags[Mana.FLAGS.ATTRIBUTES].manaCap;
 
     const spellbookPaneRaw = `
     <div class="${manaId}-box-spell">
@@ -178,22 +178,22 @@ function lazyMana(oldMana, lazyMana) {
 
 /**
  * Not the most concise name, but it does what it says on the tin.
- * It checks if the actor has a MANA_RELATED_ATTRIBUTES flag, and if not, it adds it.
+ * It checks if the actor has a DEPENDENCY_ATTRIBUTES flag, and if not, it adds it.
  * If it does, it updates the flag if the actor's attributes have changed.
  * If the flag is updated, it also updates the actor's mana attributes.
  * 
  * @param {string} actorId The ID of the actor to check for the flag.
  */
 function addOrUpdateManaRelevantAtts(actorId) {
-    const oldFlag = ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_RELATED_ATTRIBUTES);
+    const oldFlag = ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.DEPENDENCY_ATTRIBUTES);
     if (oldFlag === undefined) {
         const newFlag = getManaRelevantAtts(actorId);
-        ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.MANA_RELATED_ATTRIBUTES, newFlag);
+        ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.DEPENDENCY_ATTRIBUTES, newFlag);
         Mana.updateManaAttributes(actorId);
     } else {
         const newFlag = getManaRelevantAtts(actorId);
         if (!deepEqual(oldFlag, newFlag)) {
-            ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.MANA_RELATED_ATTRIBUTES, newFlag);
+            ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.DEPENDENCY_ATTRIBUTES, newFlag);
             Mana.updateManaAttributes(actorId);
         }
     }
@@ -256,7 +256,7 @@ function setupManaFlags() {
 
     const flags = "flags";
     const modId = Mana.ID;
-    const attribute = Mana.FLAGS.MANA_ATTRIBUTE;
+    const attribute = Mana.FLAGS.ATTRIBUTES;
 
     // TODO: Replace with a loop over the enum.
     manaFlags.push(`${flags}.${modId}.${attribute}.manaCap`);
