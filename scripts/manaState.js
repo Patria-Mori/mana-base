@@ -88,21 +88,11 @@ class ManaState {
 
     /**
      * Get Mana Attribute from a given actor.
-     * NB: This applies modifiers to the returned object.
      * @param {string} actorId The ID of the actor to get the mana attribute flag from.
      * @returns Mana Attribute object.
      */
     static getManaAttributes(actorId) {
-        const manaAtts = ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE);
-        const manaAttMods = ManaAttributeMods.fromJSON(ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE_MODS));
-
-        const newManaCap = manaAtts.manaCap + manaAttMods.sumManaCapMods;
-        const newManaX = manaAtts.manaX + manaAttMods.sumManaXMods;
-        const newOverchargeCap = manaAtts.overchargeCap + manaAttMods.sumManaOverchargeMods;
-        const newManaRegen = manaAtts.manaRegen + manaAttMods.sumManaRegenMods;
-        const newManaControl = manaAtts.manaControl + manaAttMods.sumManaControlMods;
-
-        return new ManaAttributeState(newManaCap, newManaX, newOverchargeCap, newManaRegen, newManaControl);
+        return ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE);
     }
 
     /**
@@ -137,6 +127,8 @@ class ManaState {
      * Get Mana Attribute Mods from a given actor.
      * @param {string} actorId The ID of the actor to get the mana attribute mods flag from.
      * @returns Mana Attribute Mods object.
+     * 
+     * @deprecated Use getManaAttributes instead.
      */
     static getManaAttributeMods(actorId) {
         return ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE_MODS);
@@ -147,6 +139,8 @@ class ManaState {
      * @param {string} actorId The ID of the actor to set the mana attribute mods flag for.
      * @param {ManaAttributeMods} newManaAttributeMods The new mana attribute mods to set.
      * @returns Promise of updated actor document.
+     * 
+     * @deprecated Use setManaAttributes instead.
      */
     static setManaAttributeMods(actorId, newManaAttributeMods) {
         return ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.MANA_ATTRIBUTE_MODS, newManaAttributeMods);
@@ -239,6 +233,9 @@ class ManaAttributeState {
  * of any given attribute.
  * 
  * The class contains a builder and constructor that take in arrays for ease of use.
+ * 
+ * @deprecated since v0.1.0
+ * Will be removed in the beta (v0.2.0), and should not be used. Instead, use Foundry's built-in "Active Effects" system.
  */
 class ManaAttributeMods {
 

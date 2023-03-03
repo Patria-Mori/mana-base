@@ -1,23 +1,23 @@
-.pm-mana-box-spell {
+.mana-base-box-spell {
     display: flex;
     height: 25px;
     align-items: center;
 }
 
-.pm-mana-label-spell {
+.mana-base-label-spell {
     font-family: var(--t5e-modesto);
     font-size: 25px;
     height: 25px;
 }
 
-.pm-mana-box-attribute {
+.mana-base-box-attribute {
     display: flex;
     justify-content: center;
     align-items: center;
     padding-bottom: 4px;
 }
 
-.pm-mana-label-attribute {
+.mana-base-label-attribute {
     text-align: center;
     font-family: var(--t5e-modesto);
     font-size: 25px;
@@ -30,7 +30,7 @@
     height: 25px;
 }
 
-#pm-mana-current {
+#mana-base-current {
     font-family: var(--t5e-modesto);
     height: 25px;
     width: 30px;
@@ -39,7 +39,7 @@
     text-align: end;
 }
 
-#pm-mana-max {
+#mana-base-max {
     font-family: var(--t5e-modesto);
     height: 25px;
     width: 35px;
@@ -47,7 +47,7 @@
     text-align: start;
 }
 
-#pm-mana-current-attribute {
+#mana-base-current-attribute {
     font-family: var(--t5e-modesto);
     height: 25px;
     max-width: 3.5ch;
@@ -55,7 +55,7 @@
     text-align: end;
 }
 
-#pm-mana-max-attribute {
+#mana-base-max-attribute {
     font-family: var(--t5e-modesto);
     height: 25px;
     max-width: 3.5ch;
@@ -63,7 +63,7 @@
     text-align: start;
 }
 
-.pm-mana-regen-button {
+.mana-base-regen-button {
     background: transparent;
     padding: 0;
     height: 25px;

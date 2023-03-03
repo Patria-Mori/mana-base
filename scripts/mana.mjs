@@ -146,8 +146,6 @@ class Mana {
      */
     static initialiseManaOnActor(actorId) {
         this.updateManaAttributes(actorId);
-        const manaAttMods = new ManaAttributeMods.Builder().build();
-        ManaState.setManaAttributeMods(actorId, manaAttMods);
         return ManaState.setMana(actorId, 0);
     }
 
