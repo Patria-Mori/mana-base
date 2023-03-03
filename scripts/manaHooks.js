@@ -41,6 +41,14 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
 
     const manaFlags = dndSheet.object.flags[Mana.ID];
     const manaId = Mana.ID;
+
+    // Mana Attributes
+    const manaCap = manaFlags[Mana.FLAGS.MANA_ATTRIBUTE].manaCap;
+    const manaX = manaFlags[Mana.FLAGS.MANA_ATTRIBUTE].manaX;
+    const overchargeCap = manaFlags[Mana.FLAGS.MANA_ATTRIBUTE].overchargeCap;
+    const manaRegen = manaFlags[Mana.FLAGS.MANA_ATTRIBUTE].manaRegen;
+    const manaControl = manaFlags[Mana.FLAGS.MANA_ATTRIBUTE].manaControl;
+    // Mana Pane Values
     const curMana = manaFlags[Mana.FLAGS.MANA_STATE];
     const maxMana = manaFlags[Mana.FLAGS.MANA_ATTRIBUTE].manaCap;
 
@@ -58,6 +66,10 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
     inventoryFiltersDiv[0].style.display = "flex";                  // Makes the inventory filters div a flexbox.
     inventoryFiltersDiv[0].style.justifyContent = "space-between";  // Makes the mana box div and the ineventory filter div align properly.
 
+    // Adds expandable mana attribute pane to the character sheet.
+    const extendedUIFlag = ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.EXTENDED_MANA_UI);
+    const extendedUIStyle = extendedUIFlag ? `` : `display: none;`;
+
     const attributePaneRaw = `
     <div class="${manaId}-box-attribute">
         <ul class="${manaId}-list-attribute">
@@ -73,6 +85,16 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
         <button type="button" class="${manaId}-regen-button flex0" title="Regen Mana (1 tick)">
             <i class="fa-solid fa-wand-magic-sparkles"></i>
         </button>
+        <button type="button" class="${manaId}-toggle-extendedUI flex0" title="Expand/Collapse Mana Attribute Pane - Shows you the Mana Attribute Values">
+            <i class="fa-solid fa-expand"></i>
+        </button>
+        <div class="${manaId}-extendedUI" style="${extendedUIStyle}">
+            <h4>Mana Cap: ${manaCap}</h4>
+            <h4>Mana X: ${manaX}</h4>
+            <h4>Overcharge Cap: ${overchargeCap}</h4>
+            <h4>Mana Regen: ${manaRegen}</h4>
+            <h4>Mana Control Dice: ${manaControl}</h4>
+        </div>
     </div> `;
     const attributePaneHtml = htmlToElement(attributePaneRaw); 
 
@@ -104,6 +126,17 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
     const regenButton = html.find(`.${manaId}-regen-button`);
     regenButton.on("click", () => {
         ManaState.regenMana(actorId, 1, true);
+    });
+
+    // Add event listeners to the toggle extended UI button
+    const toggleExtendedUIButton = html.find(`.${manaId}-toggle-extendedUI`);
+    toggleExtendedUIButton.on("click", () => {
+        
+        if (extendedUIFlag) {
+            ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.EXTENDED_MANA_UI, false);
+        } else { 
+            ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.EXTENDED_MANA_UI, true);
+        }
     });
 });
 

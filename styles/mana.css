@@ -71,3 +71,12 @@
     border: 0;
     align-self: center;
 }
+
+.mana-base-toggle-extendedUI  {
+    background: transparent;
+    padding: 0;
+    height: 25px;
+    max-width: 50px;
+    border: 0;
+    align-self: center;
+}

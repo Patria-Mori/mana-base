@@ -9,7 +9,8 @@ class Mana {
         MANA_STATE: "mana-state",
         MANA_ATTRIBUTE: "mana-attribute",
         MANA_ATTRIBUTE_MODS: "mana-attribute-mods", // Deprecated
-        MANA_RELATED_ATTRIBUTES: "_related-attributes"
+        MANA_RELATED_ATTRIBUTES: "_related-attributes",
+        EXTENDED_MANA_UI: "_extended-UI"
     }
 
     static TEMPLATES = {
