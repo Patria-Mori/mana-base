@@ -6,6 +6,19 @@ The Base module is a requirement for all other modules, and serves as the founda
 
 As the module is the "Base" module it is intended to be stable and thus likely won't be updated too frequently once a stable release is ready (we're currently in alpha).
 
+## Installation
+
+It's always better and easier to install modules through the in-app browser.
+
+To install this module manually:
+1. Inside the Foundry "Configuration and Setup" screen, click "Add-on Modules"
+2. Click "Install Module"
+3. In the "Manifest URL" field, paste the following url:
+`https://raw.githubusercontent.com/Patria-Mori/mana-base/master/module.json`
+4. Click 'Install' and wait for installation to complete
+5. Don't forget to enable the module in game using the "Manage Module" button
+
+
 ## User Guide
 
 TODO

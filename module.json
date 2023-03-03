@@ -49,7 +49,7 @@
             {
                 "id": "dae",
                 "type": "module",
-                "manifest": "https://gitlab.com/tposney/dae/-/raw/master/src/module.json",
+                "manifest": "https://gitlab.com/tposney/dae/raw/v10/package/module.json",
                 "compatibility": {
                     "verified": "0.10.22"
                 }
