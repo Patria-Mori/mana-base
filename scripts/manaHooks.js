@@ -22,36 +22,17 @@ Hooks.on("setup", async function () {
     setupManaFlags();
 });
 
-// Render hooks
-/**
- * I've run into an issue with using this method for detecting changes:
- * It doesn't always fire when I need it to.
- * Sometimes it will fire, like with abilities, but it doesn't seem to fire when prof bonus changes, or level changes.
- * Thus, to remedy this problem, I think the best way is to store a state of the actor's relevant attributes and stats,
- * and then compare that state to the current state of the actor to see if anything has changed.
- * 
- * The things I need to store are:
- * - Ability scores (wis, int, cha)
- * - Proficiency bonus
- * - Class
- */
-Hooks.on("updateActor", function (actor, data, options, userId) {
-    if (game.settings.get(Mana.ID, "showMana") === false) {
-        return;
-    }
-
-    if (data.system?.abilities) { // This will only be true if the update contains a change to ability scores.
-        Mana.updateManaAttributes(actor._id);
-    }
-});
-
 // Non-final TODO: Extract HTML to handlebars template.
+// TODO: Update documentation
+// TODO: Refactor code to be more readable.
 Hooks.on("renderActorSheet", function (dndSheet, html) {
     if (game.settings.get(Mana.ID, "showMana") === false) {
         return;
     }
 
     const actorId = dndSheet.object._id;
+    addOrUpdateManaRelevantAtts(actorId);
+
     if (ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_STATE) === undefined) {
         // If the actor doesn't have a mana state flag, we need to create it and related mana flags.
         Mana.initialiseManaOnActor(actorId);
@@ -160,6 +141,79 @@ function lazyMana(oldMana, lazyMana) {
     }
   
     return Math.max(calculatedMana, 0);
+}
+
+/**
+ * Not the most concise name, but it does what it says on the tin.
+ * It checks if the actor has a MANA_RELATED_ATTRIBUTES flag, and if not, it adds it.
+ * If it does, it updates the flag if the actor's attributes have changed.
+ * If the flag is updated, it also updates the actor's mana attributes.
+ * 
+ * @param {string} actorId The ID of the actor to check for the flag.
+ */
+function addOrUpdateManaRelevantAtts(actorId) {
+    const oldFlag = ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.MANA_RELATED_ATTRIBUTES);
+    if (oldFlag === undefined) {
+        const newFlag = getManaRelevantAtts(actorId);
+        ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.MANA_RELATED_ATTRIBUTES, newFlag);
+        Mana.updateManaAttributes(actorId);
+    } else {
+        const newFlag = getManaRelevantAtts(actorId);
+        if (!deepEqual(oldFlag, newFlag)) {
+            ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.MANA_RELATED_ATTRIBUTES, newFlag);
+            Mana.updateManaAttributes(actorId);
+        }
+    }
+}
+
+/**
+ * Compares two objects for deep equality. 
+ * This means that it will compare the values of the objects, not the references.
+ * 
+ * @param {*} object1 
+ * @param {*} object2 
+ * @returns true if the objects are equal, false otherwise.
+ */
+function deepEqual(object1, object2) {
+    const keys1 = Object.keys(object1);
+    const keys2 = Object.keys(object2);
+    if (keys1.length !== keys2.length) {
+      return false;
+    }
+    for (const key of keys1) {
+      const val1 = object1[key];
+      const val2 = object2[key];
+      const areObjects = isObject(val1) && isObject(val2);
+      if (
+        areObjects && !deepEqual(val1, val2) ||
+        !areObjects && val1 !== val2
+      ) {
+        return false;
+      }
+    }
+    return true;
+}
+
+function isObject(object) {
+    return object != null && typeof object === 'object';
+}
+
+/**
+ * Gets the mana relevant attributes for an actor.
+ * 
+ * @param {string} actorId The ID of the actor to set the flag for.
+ */
+function getManaRelevantAtts(actorId) {
+    let actorObj = game.actors.get(actorId);
+    const relatedFlags = {
+        wisMod : wisMod = actorObj.system.abilities.wis.mod,
+        intMod : intMod = actorObj.system.abilities.int.mod,
+        chaMod : chaMod = actorObj.system.abilities.cha.mod,
+        profBonus : actorObj.system.attributes.prof,
+        class : ManaConfig.findOriginalClassIdentifier(actorId)
+    };
+
+    return relatedFlags;
 }
 
 function setupManaFlags() {

@@ -4,17 +4,19 @@ class Mana {
     static ID = 'mana-base';
 
     static FLAGS = {
+        // TODO: Remove the "mana-" portion from the MANA_X flags, it's redundant. Also rename the flags.
         MANA: "mana",
         MANA_STATE: "mana-state",
         MANA_ATTRIBUTE: "mana-attribute",
-        MANA_ATTRIBUTE_MODS: "mana-attribute-mods"
+        MANA_ATTRIBUTE_MODS: "mana-attribute-mods", // Deprecated
+        MANA_RELATED_ATTRIBUTES: "_related-attributes"
     }
 
     static TEMPLATES = {
         MANA: `modules/${this.ID}/templates/mana.hbs`
     }
 
-    // "API"
+    // "API" TODO: Make this a proper API. 
 
     /**
      * Finds the mana capacity of the provided actor.
