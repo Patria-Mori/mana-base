@@ -15,6 +15,13 @@ Hooks.on("init", async function () {
     });
 });
 
+/**
+ * Sets up the module.
+ */
+Hooks.on("setup", async function () {
+    setupManaFlags();
+});
+
 // Render hooks
 /**
  * I've run into an issue with using this method for detecting changes:
@@ -153,4 +160,39 @@ function lazyMana(oldMana, lazyMana) {
     }
   
     return Math.max(calculatedMana, 0);
+}
+
+function setupManaFlags() {
+    Mana.log(true, "Setting up mana flags.")
+
+    const manaFlags = [];
+
+    const flags = "flags";
+    const modId = Mana.ID;
+    const attribute = Mana.FLAGS.MANA_ATTRIBUTE;
+
+    // TODO: Replace with a loop over the enum.
+    manaFlags.push(`${flags}.${modId}.${attribute}.manaCap`);
+    manaFlags.push(`${flags}.${modId}.${attribute}.manaControl`);
+    manaFlags.push(`${flags}.${modId}.${attribute}.manaRegen`);
+    manaFlags.push(`${flags}.${modId}.${attribute}.manaX`);
+    manaFlags.push(`${flags}.${modId}.${attribute}.overchargeCap`);
+
+    // Adds the flags to the DAE fields, making it easier to select them in the DAE UI.
+    // TODO: This is a hacky way to do this. Find a better way.
+    if (game.modules.get("dae")) {
+        const initDAE = async () => {
+            for (let i = 0; i < 100; i++) {
+                if (globalThis.DAE) {
+                    globalThis.DAE.addAutoFields(manaFlags);
+                    return true;
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+            }
+            return false;
+        };
+        initDAE().then(value => {if (!value)
+            console.error(`pm-mana | initDAE settings failed.`)});
+    }
 }
