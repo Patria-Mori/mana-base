@@ -1,5 +1,5 @@
 {
-    "name": "pm-mana",
+    "name": "mana-base",
     "title": "Patria Mori Mana module",
     "description": "A simple module that provides a lot of nice automation for using Lori's mana system in Foundry VTT.",
     "authors": [

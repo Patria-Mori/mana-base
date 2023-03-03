@@ -193,6 +193,6 @@ function setupManaFlags() {
             return false;
         };
         initDAE().then(value => {if (!value)
-            console.error(`pm-mana | initDAE settings failed.`)});
+            console.error(`${Mana.ID} | initDAE settings failed.`)});
     }
 }

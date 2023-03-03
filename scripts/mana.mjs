@@ -1,7 +1,7 @@
 class Mana {
 
     // Config stuff
-    static ID = 'pm-mana';
+    static ID = 'mana-base';
 
     static FLAGS = {
         MANA: "mana",
