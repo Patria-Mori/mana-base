@@ -161,6 +161,8 @@ class ManaState {
  * Mana Attribute State represents different mana-related attributes, which are 
  * stateless and derivable from other entity attributes.
  * 
+ * Provided attributes will not be lower than 0.
+ * 
  * NB: These should not include Mana Attribute Modifiers, as that would make them 
  * stateless. This is also why there are no setters, create a new one if you have to.
  */
@@ -180,11 +182,11 @@ class ManaAttributeState {
      * @param {number} manaControl   Number of d8s to roll when manipulating mana
      */
     constructor(manaCap, manaX, overchargeCap, manaRegen, manaControl) {
-        this.manaCap = manaCap;
-        this.manaX = manaX;
-        this.overchargeCap = overchargeCap;
-        this.manaRegen = manaRegen;
-        this.manaControl = manaControl;
+        this.manaCap = Math.max(manaCap, 0);
+        this.manaX = Math.max(manaX, 0);
+        this.overchargeCap = Math.max(overchargeCap, 0);
+        this.manaRegen = Math.max(manaRegen, 0);
+        this.manaControl = Math.max(manaControl, 0);
     }
 
     /**
