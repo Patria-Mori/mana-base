@@ -131,6 +131,30 @@ class Mana {
      * @returns Promise that resolves to the updated actor.
      */
     static updateManaAttributes(actorId) {
+        let charObj = game.actors.get(actorId);
+        let wisMod = charObj.system.abilities.wis.mod;
+        let profBonus = charObj.system.attributes.prof;
+        let xValue = charObj.flags[Mana.ID][Mana.FLAGS.ATTRIBUTES].manaX
+
+        const manaCap = this.calculateManaCap(wisMod, profBonus, xValue, 0);
+        const manaX = ManaConfig.findXValueApproximation(actorId);
+        const manaRegen = this.calculateCharacterManaRegen(actorId);
+        const manaControlDice = this.calculateCharacterManaControlDice(actorId);
+        const overchargeCap = this.calculateCharacterOverchargeCap(actorId);
+
+        const attributeState = new ManaAttributeState(manaCap, manaX, overchargeCap, manaRegen, manaControlDice);
+
+        return ManaState.setManaAttributes(actorId, attributeState);
+    }
+
+    /**
+     * Utility function that initialises the mana attributes of a character.
+     * Should only be used when the character is first created.
+     * 
+     * @param {String} actorId The ID of the actor we want to initialise.
+     * @returns Promise that resolves to the initialised actor.
+     */
+    static initialiseManaAttributes(actorId) {
         const manaCap = this.calculateCharacterManaCap(actorId);
         const manaX = ManaConfig.findXValueApproximation(actorId);
         const manaRegen = this.calculateCharacterManaRegen(actorId);
@@ -148,7 +172,7 @@ class Mana {
      * @returns Promise that resolves to the updated actor.
      */
     static initialiseManaOnActor(actorId) {
-        this.updateManaAttributes(actorId);
+        this.initialiseManaAttributes(actorId);
         return ManaState.setMana(actorId, 0);
     }
 

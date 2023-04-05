@@ -31,13 +31,13 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
     }
 
     const actorId = dndSheet.object._id;
-    addOrUpdateManaRelevantAtts(actorId);
-
     if (ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.STATE) === undefined) {
         // If the actor doesn't have a mana state flag, we need to create it and related mana flags.
         Mana.initialiseManaOnActor(actorId);
         return;
     }
+
+    addOrUpdateManaRelevantAtts(actorId);
 
     const manaFlags = dndSheet.object.flags[Mana.ID];
     const manaId = Mana.ID;
@@ -242,6 +242,7 @@ function getManaRelevantAtts(actorId) {
         wisMod : wisMod = actorObj.system.abilities.wis.mod,
         intMod : intMod = actorObj.system.abilities.int.mod,
         chaMod : chaMod = actorObj.system.abilities.cha.mod,
+        xMod : xMod = actorObj.flags[Mana.ID][Mana.FLAGS.ATTRIBUTES].manaX,
         profBonus : actorObj.system.attributes.prof,
         class : ManaConfig.findOriginalClassIdentifier(actorId)
     };
