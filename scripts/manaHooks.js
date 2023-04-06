@@ -57,7 +57,7 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
         <h2 class="${manaId}-label-spell">Mana:</h2>
         <input id="${manaId}-current" type="text" value="${curMana}" data-dtype="Number" placeholder="0" title="Current Mana" maxlength="5">
         <span class="seperator"> / </span>
-        <input id="${manaId}-max" type="text" value="${maxMana}" data-dtype="Number" placeholder="0" title="Maximum Mana Capacity" maxlength="5">
+        <span id="${manaId}-max" title="Maximum Mana Capacity">${maxMana}</span>
     </div>`;
     const spellbookPaneHtml = htmlToElement(spellbookPaneRaw);
 
@@ -78,7 +78,7 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
                 <div class="${manaId}-box-attribute">
                     <input id="${manaId}-current-attribute" type="text" value="${curMana}" data-dtype="Number" placeholder="0" title="Current Mana" maxlength="5">
                     <span class="seperator"> / </span>
-                    <input id="${manaId}-max-attribute" type="text" value="${maxMana}" data-dtype="Number" placeholder="0" title="Maximum Mana Capacity" maxlength="5">
+                    <span id="${manaId}-max-attribute" title="Maximum Mana Capacity">${maxMana}</span>
                 </div>
             </li>
         </ul>
