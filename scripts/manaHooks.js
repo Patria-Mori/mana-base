@@ -58,35 +58,30 @@ Hooks.on("setup", async function () {
     setupManaFlags();
 });
 
+// This hook is fired when an actor is created, should be used to intialise the module flags on the actor.
+Hooks.on("createActor", async function (document, options, userId) {
+    initActorModuleFlags(document);
+});
+
 // Non-final TODO: Extract HTML to handlebars template.
 // TODO: Update documentation
 // TODO: Refactor code to be more readable.
 Hooks.on("renderActorSheet", function (dndSheet, html) {
-    const actorId = dndSheet.object._id;
     const manaFlags = dndSheet.object.flags[Mana.ID];
     const manaId = Mana.ID;
 
-    if (manaFlags === undefined) { // if the actor doesn't have any mana flags set we set the displayMana flag based on the world settings.
-        const newActorDefault = getDisplayManaDefault(dndSheet.object.type);
-        ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.DISPLAY_MANA, newActorDefault);
-        return;
-    } else if (manaFlags[Mana.FLAGS.DISPLAY_MANA] === false) { // If the actor has the showMana flag set to false, we don't want to show mana.
+    // If the actor has the display mana flag set to false, we don't want to show the UI.
+    if (manaFlags[Mana.FLAGS.DISPLAY_MANA] === false) { 
         return;
     }
     
+    // If the user has the client setting to not show mana, we don't want to show the UI.
     if (game.settings.get(Mana.ID, "clientShowMana") === false) {
         return;
     }
 
-    
-    if (ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.STATE) === undefined) {
-        // If the actor doesn't have a mana state flag, we need to create it and related mana flags.
-        Mana.initialiseManaOnActor(actorId);
-        return;
-    }
-
+    const actorId = dndSheet.object._id;
     addOrUpdateManaRelevantAtts(actorId);
-
 
     // Mana Attributes
     const manaCap = manaFlags[Mana.FLAGS.ATTRIBUTES].manaCap;
@@ -189,6 +184,34 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
 // Utility functions
 
 /**
+ * This function can be used to initialise the mana module flags on an actor.
+ * @param {Document} document - The actor document.
+ */
+function initActorModuleFlags(document) {
+    const actorId = document._id;
+    // ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.STATE, 0);
+    // ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.ATTRIBUTES, null);
+    Mana.initialiseManaOnActor(actorId); //TODO: Integrate that function into this one.
+
+    // Determine whether or not to display mana UI based on the default settings.
+    const newActorDefault = getDisplayManaDefault(document.type);
+    ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.DISPLAY_MANA, newActorDefault); 
+
+    // Sets the dependent attributes flags on the actor.
+    const dependentAttributes = {
+        wisMod : document.system.abilities.wis.mod,
+        intMod : document.system.abilities.int.mod,
+        chaMod : document.system.abilities.cha.mod,
+        xMod : xMod = 1,
+        profBonus : document.system.attributes.prof,
+        class : undefined
+    };
+    
+    //getManaRelevantAtts(actorId);
+    ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.DEPENDENCY_ATTRIBUTES, dependentAttributes);
+}
+
+/**
  * Utility function to convert a string of HTML code to an element.
  * @param {string} html 
  * @returns 
@@ -249,11 +272,11 @@ function lazyMana(oldMana, lazyMana) {
 function addOrUpdateManaRelevantAtts(actorId) {
     const oldFlag = ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.DEPENDENCY_ATTRIBUTES);
     if (oldFlag === undefined) {
-        const newFlag = getManaRelevantAtts(actorId);
+        const newFlag = getManaDependentAtts(actorId);
         ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.DEPENDENCY_ATTRIBUTES, newFlag);
         Mana.updateManaAttributes(actorId);
     } else {
-        const newFlag = getManaRelevantAtts(actorId);
+        const newFlag = getManaDependentAtts(actorId);
         if (!deepEqual(oldFlag, newFlag)) {
             ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.DEPENDENCY_ATTRIBUTES, newFlag);
             Mana.updateManaAttributes(actorId);
@@ -298,9 +321,9 @@ function isObject(object) {
  * 
  * @param {string} actorId The ID of the actor to set the flag for.
  */
-function getManaRelevantAtts(actorId) {
+function getManaDependentAtts(actorId) {
     let actorObj = game.actors.get(actorId);
-    const relatedFlags = {
+    const dependentAttributes = {
         wisMod : wisMod = actorObj.system.abilities.wis.mod,
         intMod : intMod = actorObj.system.abilities.int.mod,
         chaMod : chaMod = actorObj.system.abilities.cha.mod,
@@ -309,7 +332,7 @@ function getManaRelevantAtts(actorId) {
         class : ManaConfig.findOriginalClassIdentifier(actorId)
     };
 
-    return relatedFlags;
+    return dependentAttributes;
 }
 
 function setupManaFlags() {
