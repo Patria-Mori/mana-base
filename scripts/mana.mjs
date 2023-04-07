@@ -9,6 +9,8 @@ class Mana {
         ATTRIBUTES: "attributes",
         ATTRIBUTE_MODS: "mana-attribute-mods", // Deprecated
         // The flags below are considered "internal".
+        // They are not meant to be accessed by other modules.
+        DISPLAY_MANA: "_display-mana", // Whether or not to display mana UI.
         DEPENDENCY_ATTRIBUTES: "_dependency-attributes", // Attributes that mana attributes are dependent on.
         EXTENDED_MANA_UI: "_extended-UI"
     }

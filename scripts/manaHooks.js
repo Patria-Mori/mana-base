@@ -4,8 +4,44 @@ Hooks.once('devModeReady', ({ registerPackageDebugFlag }) => {
 
 
 Hooks.on("init", async function () {
-    game.settings.register(Mana.ID, "showMana", { 
-        name: "Show mana in character sheets",
+    game.settings.register(Mana.ID, "worldShowManaPCDefault", {
+        name: "New PC Actor Mana UI Default",
+        hint: "If enabled, all new Player Character actors will have the mana UI shown by default.",
+        scope: "world",
+        config: true,
+        requiresReload: false,
+        type: Boolean,
+        default: true,
+    });
+    game.settings.register(Mana.ID, "worldShowManaNPCDefault", {
+        name: "New NPC Actor Mana UI Default",
+        hint: "If enabled, all new Non-Player Character actors will have the mana UI shown by default.",
+        scope: "world",
+        config: true,
+        requiresReload: false,
+        type: Boolean,
+        default: false,
+    });
+    game.settings.register(Mana.ID, "worldShowManaVehicleDefault", {
+        name: "New Vehicle Actor Mana UI Default",
+        hint: "If enabled, all new Vehicle actors will have the mana UI shown by default.",
+        scope: "world",
+        config: true,
+        requiresReload: false,
+        type: Boolean,
+        default: true,
+    });
+    game.settings.register(Mana.ID, "worldShowManaGroupDefault", {
+        name: "New Group Actor Mana UI Default",
+        hint: "If enabled, all new Group actors will have the mana UI shown by default.",
+        scope: "world",
+        config: true,
+        requiresReload: false,
+        type: Boolean,
+        default: false,
+    });
+    game.settings.register(Mana.ID, "clientShowMana", {  //The setting name should be set somewhere else, like in a constants file.
+        name: "Display Mana UI in actor sheets",
         hint: "If enabled, mana will be shown in character sheets.",
         scope: "client",
         config: true,
@@ -26,11 +62,23 @@ Hooks.on("setup", async function () {
 // TODO: Update documentation
 // TODO: Refactor code to be more readable.
 Hooks.on("renderActorSheet", function (dndSheet, html) {
-    if (game.settings.get(Mana.ID, "showMana") === false) {
+    const actorId = dndSheet.object._id;
+    const manaFlags = dndSheet.object.flags[Mana.ID];
+    const manaId = Mana.ID;
+
+    if (manaFlags === undefined) { // if the actor doesn't have any mana flags set we set the displayMana flag based on the world settings.
+        const newActorDefault = getDisplayManaDefault(dndSheet.object.type);
+        ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.DISPLAY_MANA, newActorDefault);
+        return;
+    } else if (manaFlags[Mana.FLAGS.DISPLAY_MANA] === false) { // If the actor has the showMana flag set to false, we don't want to show mana.
+        return;
+    }
+    
+    if (game.settings.get(Mana.ID, "clientShowMana") === false) {
         return;
     }
 
-    const actorId = dndSheet.object._id;
+    
     if (ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.STATE) === undefined) {
         // If the actor doesn't have a mana state flag, we need to create it and related mana flags.
         Mana.initialiseManaOnActor(actorId);
@@ -39,8 +87,6 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
 
     addOrUpdateManaRelevantAtts(actorId);
 
-    const manaFlags = dndSheet.object.flags[Mana.ID];
-    const manaId = Mana.ID;
 
     // Mana Attributes
     const manaCap = manaFlags[Mana.FLAGS.ATTRIBUTES].manaCap;
@@ -152,6 +198,22 @@ function htmlToElement(html) {
     html = html.trim(); // Never return a text node of whitespace as the result
     template.innerHTML = html;
     return template.content.firstChild;
+}
+
+/**
+ * Utility function that determines the default mana UI display value 
+ * to set on new actors based on the actor type and the world settings.
+ * @param {string} actorType - The actor type.
+ * @returns {boolean} The default mana UI display value. 
+ */
+function getDisplayManaDefault(actorType) {
+    switch (actorType) {
+        case "character": return game.settings.get(Mana.ID, "worldShowManaPCDefault");
+        case "npc": return game.settings.get(Mana.ID, "worldShowManaNPCDefault");
+        case "vehicle": return game.settings.get(Mana.ID, "worldShowManaVehicleDefault");
+        case "group": return game.settings.get(Mana.ID, "worldShowManaGroupDefault");
+        default: return false;
+    }
 }
 
 /**
