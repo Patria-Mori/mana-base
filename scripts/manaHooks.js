@@ -4,6 +4,8 @@ Hooks.once('devModeReady', ({ registerPackageDebugFlag }) => {
 
 
 Hooks.on("init", async function () {
+    preloadHandlebarsTemplates();
+
     game.settings.register(Mana.ID, "worldShowManaPCDefault", {
         name: "New PC Actor Mana UI Default",
         hint: "If enabled, all new Player Character actors will have the mana UI shown by default.",
@@ -63,10 +65,9 @@ Hooks.on("createActor", async function (document, options, userId) {
     initActorModuleFlags(document);
 });
 
-// Non-final TODO: Extract HTML to handlebars template.
 // TODO: Update documentation
 // TODO: Refactor code to be more readable.
-Hooks.on("renderActorSheet", function (dndSheet, html) {
+Hooks.on("renderActorSheet", async function (dndSheet, html) {
     const manaFlags = dndSheet.object.flags[Mana.ID];
     const manaId = Mana.ID;
 
@@ -93,17 +94,13 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
     const curMana = manaFlags[Mana.FLAGS.STATE];
     const maxMana = manaFlags[Mana.FLAGS.ATTRIBUTES].manaCap;
 
-    const spellbookPaneRaw = `
-    <div class="${manaId}-box-spell">
-        <h2 class="${manaId}-label-spell">Mana:</h2>
-        <input id="${manaId}-current" type="text" value="${curMana}" data-dtype="Number" placeholder="0" title="Current Mana" maxlength="5">
-        <span class="seperator"> / </span>
-        <span id="${manaId}-max" title="Maximum Mana Capacity">${maxMana}</span>
-    </div>`;
-    const spellbookPaneHtml = htmlToElement(spellbookPaneRaw);
+    const uiSpellbookTemplate = `modules/${Mana.ID}/templates/spellbook-mana-ui.hbs`;
+    const uiSpellbookData = {manaId: manaId, curMana: curMana, maxMana: maxMana}; // The data to be passed to the template.
+    const uiSpellbookRender = await renderTemplate(uiSpellbookTemplate, uiSpellbookData); // Turns the template into HTML.
+    const uiSpellbookElement = htmlToElement(uiSpellbookRender); // Turns the HTML into an element.
 
     const inventoryFiltersDiv = html[0].querySelectorAll(".spellbook .inventory-filters");
-    inventoryFiltersDiv[0].prepend(spellbookPaneHtml);              // Adds the mana "box" to the inventory filters div.
+    inventoryFiltersDiv[0].prepend(uiSpellbookElement);             // Adds the mana "box" to the inventory filters div.
     inventoryFiltersDiv[0].style.display = "flex";                  // Makes the inventory filters div a flexbox.
     inventoryFiltersDiv[0].style.justifyContent = "space-between";  // Makes the mana box div and the ineventory filter div align properly.
 
@@ -111,36 +108,15 @@ Hooks.on("renderActorSheet", function (dndSheet, html) {
     const extendedUIFlag = ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.EXTENDED_MANA_UI);
     const extendedUIStyle = extendedUIFlag ? `` : `display: none;`;
 
-    const attributePaneRaw = `
-    <div class="${manaId}-box-attribute">
-        <ul class="${manaId}-list-attribute">
-            <li class="${manaId}-resource">
-                <h4 class="${manaId}-label-attribute">Mana</h4>
-                <div class="${manaId}-box-attribute">
-                    <input id="${manaId}-current-attribute" type="text" value="${curMana}" data-dtype="Number" placeholder="0" title="Current Mana" maxlength="5">
-                    <span class="seperator"> / </span>
-                    <span id="${manaId}-max-attribute" title="Maximum Mana Capacity">${maxMana}</span>
-                </div>
-            </li>
-        </ul>
-        <button type="button" class="${manaId}-regen-button flex0" title="Regen Mana (1 tick)">
-            <i class="fa-solid fa-wand-magic-sparkles"></i>
-        </button>
-        <button type="button" class="${manaId}-toggle-extendedUI flex0" title="Expand/Collapse Mana Attribute Pane - Shows you the Mana Attribute Values">
-            <i class="fa-solid fa-expand"></i>
-        </button>
-        <div class="${manaId}-extendedUI" style="${extendedUIStyle}">
-            <h4>Mana Cap: ${manaCap}</h4>
-            <h4>Mana X: ${manaX}</h4>
-            <h4>Overcharge Cap: ${overchargeCap}</h4>
-            <h4>Mana Regen: ${manaRegen}</h4>
-            <h4>Mana Control Dice: ${manaControl}</h4>
-        </div>
-    </div> `;
-    const attributePaneHtml = htmlToElement(attributePaneRaw); 
+    const uiAttributeTemplate = `modules/${Mana.ID}/templates/attribute-mana-ui.hbs`;
+    const uiAttributeData = {manaId: manaId, curMana: curMana, maxMana: maxMana,
+        extendedUIStyle: extendedUIStyle, manaCap: manaCap, manaX: manaX, 
+        overchargeCap: overchargeCap, manaRegen: manaRegen, manaControl: manaControl}; // The data to be passed to the template.
+    const uiAttributeRender = await renderTemplate(uiAttributeTemplate, uiAttributeData); 
+    const uiAttributeElement = htmlToElement(uiAttributeRender); 
 
     const attributePaneDiv = html[0].querySelectorAll(".attributes .center-pane");
-    attributePaneDiv[0].prepend(attributePaneHtml);
+    attributePaneDiv[0].prepend(uiAttributeElement);
 
     
     // Add event listeners to the input fields
@@ -370,4 +346,17 @@ function setupManaFlags() {
         initDAE().then(value => {if (!value)
             console.error(`${Mana.ID} | initDAE settings failed.`)});
     }
+}
+
+/**
+ * Preloads and caches the handlebars templates used by the module. 
+ * @returns Promise that resolves once the templates are loaded.
+ */
+async function preloadHandlebarsTemplates() {
+    const templatePaths = [
+        `modules/${Mana.ID}/templates/spellbook-mana-ui.hbs`,
+        `modules/${Mana.ID}/templates/attribute-mana-ui.hbs`
+    ];
+
+    return loadTemplates(templatePaths);
 }
