@@ -192,10 +192,12 @@ function initActorModuleFlags(document) {
     // ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.STATE, 0);
     // ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.ATTRIBUTES, null);
     Mana.initialiseManaOnActor(actorId); //TODO: Integrate that function into this one.
+    ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.MODULE_VERSION, Mana.VERSION); // Sets the module version flag.
 
     // Determine whether or not to display mana UI based on the default settings.
     const newActorDefault = getDisplayManaDefault(document.type);
     ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.DISPLAY_MANA, newActorDefault); 
+    ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.EXTENDED_MANA_UI, false); // Sets the extended mana UI flag to false (collapsed by default).
 
     // Sets the dependent attributes flags on the actor.
     const dependentAttributes = {

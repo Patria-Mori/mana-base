@@ -123,38 +123,6 @@ class ManaState {
         return ManaUtils.unsetManaActorFlag(actorId, Mana.FLAGS.ATTRIBUTES);
     }
 
-    /**
-     * Get Mana Attribute Mods from a given actor.
-     * @param {string} actorId The ID of the actor to get the mana attribute mods flag from.
-     * @returns Mana Attribute Mods object.
-     * 
-     * @deprecated Use getManaAttributes instead.
-     */
-    static getManaAttributeMods(actorId) {
-        return ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.ATTRIBUTE_MODS);
-    }
-
-    /**
-     * Set Mana Attribute Mods for a given actor.
-     * @param {string} actorId The ID of the actor to set the mana attribute mods flag for.
-     * @param {ManaAttributeMods} newManaAttributeMods The new mana attribute mods to set.
-     * @returns Promise of updated actor document.
-     * 
-     * @deprecated Use setManaAttributes instead.
-     */
-    static setManaAttributeMods(actorId, newManaAttributeMods) {
-        return ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.ATTRIBUTE_MODS, newManaAttributeMods);
-    }
-
-    /**
-     * Unset Mana Attribute Mods for a given actor.
-     * @param {string} actorId The ID of the actor to unset the mana attribute mods flag for.
-     * @returns Promise of updated actor document.
-     */
-    static unsetManaAttributeMods(actorId) {
-        return ManaUtils.unsetManaActorFlag(actorId, Mana.FLAGS.ATTRIBUTE_MODS);
-    }
-
 }
 
 /**
