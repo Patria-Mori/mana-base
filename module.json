@@ -7,18 +7,24 @@
             "name": "Jonas"
         }
     ],
-    "version": "0.1.1",
+    "version": "0.2.0",
     "compatibility": {
         "minimum": 10,
         "verified": 10,
         "maximum": 11
     },
     "scripts": [
-        "scripts/mana.mjs",
-        "scripts/manaHooks.js",
-        "scripts/manaUtils.js",
-        "scripts/manaState.js",
-        "scripts/manaConfig.js"
+        "scripts/moduleConfig.js",
+        "scripts/moduleHooks.js",
+        "scripts/api/manaState.js",
+        "scripts/model/manaAttributes.js",
+        "scripts/model/manaSystemRules.js",
+        "scripts/module/moduleSettings.js",
+        "scripts/utils/actorUtils.js",
+        "scripts/utils/flagUtils.js",
+        "scripts/utils/moduleUtils.js",
+        "scripts/utils/updateUtils.js",
+        "scripts/view/actorSheetUI.js"
     ],
     "languages": [
         {
@@ -28,11 +34,11 @@
         }
     ],
     "styles": [
-        "styles/mana.css"
+        "styles/mana-base.css"
     ],
     "url": "https://github.com/Patria-Mori/mana-base",
     "manifest": "https://raw.githubusercontent.com/Patria-Mori/mana-base/master/module.json",
-    "download": "https://github.com/Patria-Mori/mana-base/releases/download/v0.1.1/module.zip",
+    "download": "https://github.com/Patria-Mori/mana-base/releases/download/v0.2.0/module.zip",
     "relationships": {
         "systems": [
             {

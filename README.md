@@ -19,15 +19,19 @@ To install this module manually:
 5. Don't forget to enable the module in game using the "Manage Module" button
 
 
-## User Guide
+## Module code structor
 
-TODO
-
-## Explanation of features (OLD)
-
-TODO: Update
-
- - [**Mana API**]: The API can be used by other modules to easily modify their mana, set certain conditions etc. In short is the "official" way for other modules to manipulate a characters mana-related functionality, such as removing or adding mana, etc.
- - [**Mana Config**]: Defines random stuff like which class has what X value, what the names of the circles are, maybe even how mana calculations are defined.
- - [**Character-side automation**]: Internal sub-module, responsible for calculating lots of useful mana-related things, such as mana capacity, regen per tick, etc. Will implement several utility functions which make it easy to restore mana when short/long-resting, etc.
- - [**Character Mana state**]: Class/similar that stores mana stuff, like their current mana, mana crystals, and basically anything "stateful".
+The module consists of several scripts and sub-folders inside the "scripts" folder. This briefly describes them.
+ - **api**: Consists of scripts that are intended to be used in the API (in the future).
+ - **model**: Defines the relevant models in the mod.
+   - **manaAttributes.js**: Contains the ManaAttributes object used to store mana attributes.
+   - **manaSystemRules.js**: All of the rules in the PM mana system are expressed as functions in here.
+ - **module**: Contains scripts used for managing the module, such as settings.
+ - **utils**: Several very useful utility classes, some of which will probably be turned into APIs.
+   - **actorUtils.js**: Used to manage and perform actions on actors.
+   - **flagUtils.js**: Very simple script to get, set, and unset flags.
+   - **moduleUtils.js**: Contains a few useful functions that don't fit elsewhere.
+   - **updateUtils.js**: Contains scripts used to port data models from older versions of the mod.
+- **view**: Stores scripts responsible for the UI.
+- **moduleConfig.js**: Contains the configuration of the module.
+- **moduleHooks.js**: Simple script that adds event listener hooks for the module.
