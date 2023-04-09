@@ -60,6 +60,14 @@ Hooks.on("setup", async function () {
     setupManaFlags();
 });
 
+/**
+ * Fires when the game is ready.
+ * Useful when you need the game data to be fully initialised.
+ */
+Hooks.on("ready", async function () {
+    updateModuleDataModels();
+});
+
 // This hook is fired when an actor is created, should be used to intialise the module flags on the actor.
 Hooks.on("createActor", async function (document, options, userId) {
     initActorModuleFlags(document);
@@ -72,7 +80,7 @@ Hooks.on("renderActorSheet", async function (dndSheet, html) {
     const manaId = Mana.ID;
 
     // If the actor has the display mana flag set to false, we don't want to show the UI.
-    if (manaFlags[Mana.FLAGS.DISPLAY_MANA] === false) { 
+    if (manaFlags[Mana.FLAGS.DISPLAY_UI] === false) { 
         return;
     }
     
@@ -105,7 +113,7 @@ Hooks.on("renderActorSheet", async function (dndSheet, html) {
     inventoryFiltersDiv[0].style.justifyContent = "space-between";  // Makes the mana box div and the ineventory filter div align properly.
 
     // Adds expandable mana attribute pane to the character sheet.
-    const extendedUIFlag = ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.EXTENDED_MANA_UI);
+    const extendedUIFlag = ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.EXPANDED_UI);
     const extendedUIStyle = extendedUIFlag ? `` : `display: none;`;
 
     const uiAttributeTemplate = `modules/${Mana.ID}/templates/attribute-mana-ui.hbs`;
@@ -150,9 +158,9 @@ Hooks.on("renderActorSheet", async function (dndSheet, html) {
     toggleExtendedUIButton.on("click", () => {
         
         if (extendedUIFlag) {
-            ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.EXTENDED_MANA_UI, false);
+            ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.EXPANDED_UI, false);
         } else { 
-            ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.EXTENDED_MANA_UI, true);
+            ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.EXPANDED_UI, true);
         }
     });
 });
@@ -172,21 +180,21 @@ function initActorModuleFlags(document) {
 
     // Determine whether or not to display mana UI based on the default settings.
     const newActorDefault = getDisplayManaDefault(document.type);
-    ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.DISPLAY_MANA, newActorDefault); 
-    ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.EXTENDED_MANA_UI, false); // Sets the extended mana UI flag to false (collapsed by default).
+    ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.DISPLAY_UI, newActorDefault); 
+    ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.EXPANDED_UI, false); // Sets the extended mana UI flag to false (collapsed by default).
 
     // Sets the dependent attributes flags on the actor.
     const dependentAttributes = {
         wisMod : document.system.abilities.wis.mod,
         intMod : document.system.abilities.int.mod,
         chaMod : document.system.abilities.cha.mod,
-        xMod : xMod = 1,
+        manaX : manaX = 1,
         profBonus : document.system.attributes.prof,
         class : undefined
     };
     
     //getManaRelevantAtts(actorId);
-    ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.DEPENDENCY_ATTRIBUTES, dependentAttributes);
+    ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.DEPENDENT_ATTRIBUTES, dependentAttributes);
 }
 
 /**
@@ -241,22 +249,22 @@ function lazyMana(oldMana, lazyMana) {
 
 /**
  * Not the most concise name, but it does what it says on the tin.
- * It checks if the actor has a DEPENDENCY_ATTRIBUTES flag, and if not, it adds it.
+ * It checks if the actor has a DEPENDENT_ATTRIBUTES flag, and if not, it adds it.
  * If it does, it updates the flag if the actor's attributes have changed.
  * If the flag is updated, it also updates the actor's mana attributes.
  * 
  * @param {string} actorId The ID of the actor to check for the flag.
  */
 function addOrUpdateManaRelevantAtts(actorId) {
-    const oldFlag = ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.DEPENDENCY_ATTRIBUTES);
+    const oldFlag = ManaUtils.getManaActorFlag(actorId, Mana.FLAGS.DEPENDENT_ATTRIBUTES);
     if (oldFlag === undefined) {
         const newFlag = getManaDependentAtts(actorId);
-        ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.DEPENDENCY_ATTRIBUTES, newFlag);
+        ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.DEPENDENT_ATTRIBUTES, newFlag);
         Mana.updateManaAttributes(actorId);
     } else {
         const newFlag = getManaDependentAtts(actorId);
         if (!deepEqual(oldFlag, newFlag)) {
-            ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.DEPENDENCY_ATTRIBUTES, newFlag);
+            ManaUtils.setManaActorFlag(actorId, Mana.FLAGS.DEPENDENT_ATTRIBUTES, newFlag);
             Mana.updateManaAttributes(actorId);
         }
     }
@@ -305,7 +313,7 @@ function getManaDependentAtts(actorId) {
         wisMod : wisMod = actorObj.system.abilities.wis.mod,
         intMod : intMod = actorObj.system.abilities.int.mod,
         chaMod : chaMod = actorObj.system.abilities.cha.mod,
-        xMod : xMod = actorObj.flags[Mana.ID][Mana.FLAGS.ATTRIBUTES].manaX,
+        manaX : manaX = actorObj.flags[Mana.ID][Mana.FLAGS.ATTRIBUTES].manaX,
         profBonus : actorObj.system.attributes.prof,
         class : ManaConfig.findOriginalClassIdentifier(actorId)
     };
@@ -359,4 +367,88 @@ async function preloadHandlebarsTemplates() {
     ];
 
     return loadTemplates(templatePaths);
+}
+
+/**
+ * During start-up this function is called, and goes through all the actors in the world, 
+ * updating the data models fo the actors who have outdated data models.
+ * 
+ * It iterates over all the actors in the world, and identifies the actors who have outdated data models,
+ * and then calls the update function for that specific version of the data model.
+ */
+async function updateModuleDataModels() {
+    const actors = game.actors;
+    for (let actor of actors) {
+        let actorDataModelVersion = ManaUtils.getManaActorFlag(actor._id, Mana.FLAGS.MODULE_VERSION);
+        switch (actorDataModelVersion) {
+            case undefined: updateV01xToV020(actor); break; 
+            default: break;
+        }
+    }
+}
+
+/**
+ * This is a specific update function for updating from v0.1.x to v0.2.0 on one actor.
+ * The function can handle both v0.1.0 and v0.1.1. because the data model was very similar.
+ * This function is called by updateModuleDataModels.
+ * 
+ * The function avoids using "non-pure" functions, to avoid functionality breaking if those functions are changed.
+ * We also avoid using the Mana.FLAGS enum, because that only represent the latest data model.
+ * 
+ * To update the data model, the function does the following:
+ * 1. It creates a new Attributes object, using the old attributes as a base. 
+ *      The constructor will correct negative values.
+ * 2. State is unchanged.
+ * 3. Dependent attributes are extracted from the actor, and stored in the flag.
+ *      We discard the old flag, because it may not be correct.
+ * 4. "_extended-ui" is carried over to "_expanded-ui".
+ * 5. "_display-ui" is set to true.
+ * 6. "_module-version" is set to "0.2.0".
+ */
+async function updateV01xToV020(actor) {
+    Mana.log(true, "Updating actor " + actor.name + " from v0.1.x to v0.2.0");
+    const actorId = actor._id;
+
+    // Step 1
+    const wisMod = actor.system.abilities.wis.mod;
+    const profBonus = actor.system.attributes.prof;
+    const xValue = actor.flags["mana-base"]["attributes"].manaX;
+
+    // TODO: revisit after mod refactor, avoid functions using actorId.
+    const manaCap = Mana.calculateManaCap(wisMod, profBonus, xValue, 0);
+    const manaX = ManaConfig.findXValueApproximation(actorId);
+    const manaRegen = Mana.calculateCharacterManaRegen(actorId);
+    const manaControlDice = Mana.calculateCharacterManaControlDice(actorId);
+    const overchargeCap = Mana.calculateCharacterOverchargeCap(actorId);
+
+    const newAttributes = new ManaAttributeState(manaCap, manaX, overchargeCap, manaRegen, manaControlDice);
+    ManaUtils.setManaActorFlag(actorId, "attributes", newAttributes);
+    
+    // Step 2
+    ManaUtils.setManaActorFlag(actorId, "state", actor.flags["mana-base"].state);
+
+    // Step 3
+    const intMod = actor.system.abilities.int.mod;
+    const chaMod = actor.system.abilities.cha.mod;
+    const dependentAttributes = {
+        wisMod : wisMod,
+        intMod : intMod,
+        chaMod : chaMod,
+        manaX : xValue,
+        profBonus : profBonus,
+        class : ManaConfig.findOriginalClassIdentifier(actorId)
+    };
+    ManaUtils.setManaActorFlag(actorId, "_dependent-attributes", dependentAttributes);
+    ManaUtils.unsetActorFlag(actorId, "mana-base", "_dependency-attributes");
+    
+    // Step 4
+    const oldExpandedUiFlag = ManaUtils.getManaActorFlag(actorId, "_extended-ui");
+    ManaUtils.setManaActorFlag(actorId, "_expanded-ui", oldExpandedUiFlag);
+    ManaUtils.unsetActorFlag(actorId, "mana-base", "_extended-ui");
+
+    // Step 5
+    ManaUtils.setManaActorFlag(actorId, "_display-ui", true);
+
+    // Step 6
+    ManaUtils.setManaActorFlag(actorId, "_module-version", "0.2.0");
 }

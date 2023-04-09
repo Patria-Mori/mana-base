@@ -17,6 +17,8 @@ class ManaConfig {
      * into a class with a higher X value, in these situations different, complex rules apply. 
      * @param {string} actorId The ID of the actor we look for.
      * @returns {number} X value int of the character or undefined.
+     * 
+     * TODO: Split up, so we don't use the actorId to find the class, and then use the class to find the X value.
      */
     static findXValueApproximation(actorId) {
         // TODO: The map should be externalised somewhere, probably a config file of sorts

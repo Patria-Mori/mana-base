@@ -10,9 +10,9 @@ class Mana {
         // The flags below are considered "internal".
         // They are not meant to be accessed by other modules.
         MODULE_VERSION: "_module-version", // The version of the module that the data models were last updated for.
-        DISPLAY_MANA: "_display-mana", // Whether or not to display mana UI in an actor.
-        DEPENDENCY_ATTRIBUTES: "_dependency-attributes", // Attributes that mana attributes are dependent on.
-        EXTENDED_MANA_UI: "_extended-UI"
+        DEPENDENT_ATTRIBUTES: "_dependent-attributes", // Attributes that mana attributes are dependent on.
+        DISPLAY_UI: "_display-ui", // Whether or not to display mana UI in an actor.
+        EXPANDED_UI: "_expanded-ui" // The expanded UI shows all the mana attributes.
     }
 
     static TEMPLATES = {
@@ -139,11 +139,12 @@ class Mana {
         let xValue = charObj.flags[Mana.ID][Mana.FLAGS.ATTRIBUTES].manaX
 
         const manaCap = this.calculateManaCap(wisMod, profBonus, xValue, 0);
-        const manaX = ManaConfig.findXValueApproximation(actorId);
+        const manaX = ManaConfig.findXValueApproximation(actorId); 
         const manaRegen = this.calculateCharacterManaRegen(actorId);
         const manaControlDice = this.calculateCharacterManaControlDice(actorId);
         const overchargeCap = this.calculateCharacterOverchargeCap(actorId);
 
+        // We still set the manaX value based on the approximation, since we don't want to overwrite the "true" value.
         const attributeState = new ManaAttributeState(manaCap, manaX, overchargeCap, manaRegen, manaControlDice);
 
         return ManaState.setManaAttributes(actorId, attributeState);
