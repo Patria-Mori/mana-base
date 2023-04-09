@@ -1,0 +1,36 @@
+{{!This template is used to display the mana UI in the spellbook pane in the Tidy5e sheet.}}
+{{!It uses the following data:
+    manaId: The ID of the module.
+    curMana: The current amount of mana.
+    maxMana: The maximum amount of mana.
+    extendedUIStyle: The style of the extended UI element, used to display/hide the element.
+    manaCap: The mana capacity.
+    manaX: The mana capacity multiplier.
+    overchargeCap: The overcharge capacity.
+    manaRegen: The mana regeneration rate per tick.
+    manaControl: The number of mana control dice.}}
+<div class="{{manaId}}-box-attribute">
+    <ul class="{{manaId}}-list-attribute">
+        <li class="{{manaId}}-resource">
+            <h4 class="{{manaId}}-label-attribute">Mana</h4>
+            <div class="{{manaId}}-box-attribute">
+                <input id="{{manaId}}-current-attribute" type="text" value="{{curMana}}" data-dtype="Number" placeholder="0" title="Current Mana" maxlength="5">
+                <span class="seperator"> / </span>
+                <span id="{{manaId}}-max-attribute" title="Maximum Mana Capacity">{{maxMana}}</span>
+            </div>
+        </li>
+    </ul>
+    <button type="button" class="{{manaId}}-regen-button flex0" title="Regen Mana (1 tick)">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+    </button>
+    <button type="button" class="{{manaId}}-toggle-extendedUI flex0" title="Expand/Collapse Mana Attribute Pane - Shows you the Mana Attribute Values">
+        <i class="fa-solid fa-expand"></i>
+    </button>
+    <div class="{{manaId}}-extendedUI" style="{{extendedUIStyle}}">
+        <h4>Mana Cap: {{manaCap}}</h4>
+        <h4>Mana X: {{manaX}}</h4>
+        <h4>Overcharge Cap: {{overchargeCap}}</h4>
+        <h4>Mana Regen: {{manaRegen}}</h4>
+        <h4>Mana Control Dice: {{manaControl}}</h4>
+    </div>
+</div>

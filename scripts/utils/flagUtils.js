@@ -2,7 +2,7 @@
  * Simple class containing some useful utility functions for manipulating flags in 
  * the Mana modules.
  */
-class ManaUtils {
+class ManaFlagUtils {
 
     /**
      * Generic utility function to get a flag from an actor in the Mana-base module.
@@ -11,7 +11,7 @@ class ManaUtils {
      * @returns The value of the flag.
      */
     static getManaActorFlag(actorId, flagKey) {
-        return this.getActorFlag(actorId, Mana.ID, flagKey);
+        return this.getActorFlag(actorId, ManaBaseModule.ID, flagKey);
     }
 
     /**
@@ -33,7 +33,7 @@ class ManaUtils {
      * @returns Promise of updated document.
      */
     static setManaActorFlag(actorId, flagKey, flagValue) {
-        return this.setActorFlag(actorId, Mana.ID, flagKey, flagValue);
+        return this.setActorFlag(actorId, ManaBaseModule.ID, flagKey, flagValue);
     }
 
     /**
@@ -55,7 +55,7 @@ class ManaUtils {
      * @returns Promise of updated document.
      */
     static unsetManaActorFlag(actorId, flagKey) {
-        return this.unsetActorFlag(actorId, Mana.ID, flagKey);
+        return this.unsetActorFlag(actorId, ManaBaseModule.ID, flagKey);
     }
 
     /**

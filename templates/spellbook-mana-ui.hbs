@@ -1,0 +1,12 @@
+
+{{!This template is used to display the mana UI in the spellbook pane in the Tidy5e sheet.}}
+{{!It uses the following data:
+    manaId: The ID of the module.
+    curMana: The current amount of mana.
+    maxMana: The maximum amount of mana.}}
+<div class="{{manaId}}-box-spell">
+    <h2 class="{{manaId}}-label-spell">Mana:</h2>
+    <input id="{{manaId}}-current" type="text" value="{{curMana}}" data-dtype="Number" placeholder="0" title="Current Mana" maxlength="5">
+    <span class="seperator"> / </span>
+    <span id="{{manaId}}-max" title="Maximum Mana Capacity">{{maxMana}}</span>
+</div>
