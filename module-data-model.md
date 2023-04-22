@@ -90,3 +90,7 @@ The alpha releases are characterised by an ad hoc approach, and changes were exp
   - "_dependency-attributes" -> "_dependent-attributes".
     - "xMod" -> "manaX" (corrected the mistake from v0.1.1).
   - "_expanded-ui" -> "_expanded-ui".
+
+### v0.2.1
+
+No changes.

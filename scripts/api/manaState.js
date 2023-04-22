@@ -44,6 +44,7 @@ class ManaStateApi {
      * @returns Promise of updated actor document.
      */
     static addManaSafe(actorId, manaDelta, overcharge) {
+        const manaAtts = this.getManaAttributes(actorId);
         const newMana = this.getMana(actorId) + manaDelta;
         const minMana = 0;
         const maxMana = overcharge ? manaAtts.manaCap + manaAtts.overchargeCap : manaAtts.manaCap; // Accounts for overcharge
