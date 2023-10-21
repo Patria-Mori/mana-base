@@ -23,7 +23,7 @@ export default ({ mode }) => {
       scss({
         output: "dist/styles/style.css",
         sourceMap: true,
-        watch: ["src/styles/*.scss"],
+        watch: ["src/**/*"], // Old: 'watch: ["src/styles/*.scss"]', only watches scss files.
       }),
       copy({
         targets: [
