@@ -1,14 +1,6 @@
 // This section contains all the used hooks and their callbacks.
 
 /**
- * A hook event that fires as Foundry is initializing, right before any initialization tasks have begun.
- */
-Hooks.on("init", async function () {
-    //registerModuleSettings();
-    preloadHandlebarsTemplates();
-});
-
-/**
  * A hook event that fires when Foundry has finished initializing but before the game state has been set up. 
  * Fires before any Documents, UI applications, or the Canvas have been initialized.
  */
@@ -51,16 +43,3 @@ Hooks.on("createActor", async function (document, options, userId) {
 Hooks.on("renderActorSheet", async function (actorSheet, html, data) {
     injectUiIntoActorSheet(actorSheet, html);
 });
-
-/**
- * Preloads and caches the handlebars templates used by the module. 
- * @returns Promise that resolves once the templates are loaded.
- */
-async function preloadHandlebarsTemplates() {
-    const templatePaths = [
-        ManaBaseModule.TEMPLATES.ATTRIBUTE_PANE_UI,
-        ManaBaseModule.TEMPLATES.SPELLBOOK_PANE_UI
-    ];
-
-    return loadTemplates(templatePaths);
-}
