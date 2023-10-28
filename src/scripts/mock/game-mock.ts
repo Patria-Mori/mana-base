@@ -19,18 +19,18 @@ class FlagStoreMock {
   }
 
   getFlag(scope: string, key: string) {
-    this.flagMap.get(scope)?.get(key);
+    return this.flagMap.get(scope)?.get(key);
   }
 
   setFlag(scope: string, key: string, value: any) {
     if (!this.flagMap.get(scope)) {
       this.flagMap.set(scope, new Map());
     }
-    this.flagMap.get(scope)?.set(key, value);
+    return this.flagMap.get(scope)?.set(key, value);
   }
 
   unsetFlag(scope: string, key: string) {
-    this.flagMap.get(scope)?.delete(key);
+    return this.flagMap.get(scope)?.delete(key);
   }
 
   clearAll() {
