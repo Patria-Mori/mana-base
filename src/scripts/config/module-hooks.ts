@@ -1,3 +1,4 @@
+import { addManaFlagsToDAE } from "../utils/dependency-utils";
 import { module } from "./module-config";
 import { TEMPLATES } from "./module-constants";
 import { registerModuleSettings } from "./module-settings";
@@ -17,6 +18,22 @@ Hooks.once("devModeReady", ({ registerPackageDebugFlag }) => {
 Hooks.once("init", () => {
   registerModuleSettings();
   preloadHandlebarsTemplates();
+});
+
+/**
+ * A hook event that fires when Foundry has finished initializing but before the game state has been set up.
+ * Fires before any Documents, UI applications, or the Canvas have been initialized.
+ */
+Hooks.on("setup", async function () {
+  addManaFlagsToDAE();
+});
+
+/**
+ * A hook event that fires when the game is fully ready.
+ * Useful when you need the game data to be fully initialised.
+ */
+Hooks.on("ready", async function () {
+  // updateModuleDataModels(); TODO
 });
 
 /**
