@@ -1,4 +1,5 @@
 import { addManaFlagsToDAE } from "../utils/dependency-utils";
+import { updateModuleDataModels } from "../utils/upgrade-util";
 import { module } from "./module-config";
 import { TEMPLATES } from "./module-constants";
 import { registerModuleSettings } from "./module-settings";
@@ -33,7 +34,7 @@ Hooks.on("setup", async function () {
  * Useful when you need the game data to be fully initialised.
  */
 Hooks.on("ready", async function () {
-  // updateModuleDataModels(); TODO
+  updateModuleDataModels();
 });
 
 /**

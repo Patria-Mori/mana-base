@@ -3,46 +3,6 @@
  */
 
 /**
- * Adds the mana flags to the DAE fields, making it easier to select them in the DAE UI.
- */
-function addManaFlagsToDAEOLD() {
-  // Adds the flags to the DAE fields, making it easier to select them in the DAE UI.
-  // TODO: This is a hacky way to do this. Find a better way.
-  if (game.modules.get("dae")) {
-    ManaBaseModule.log(true, "Setting up mana flags in DAE.");
-
-    const manaFlags = [];
-
-    const flags = "flags";
-    const modId = ManaBaseModule.ID;
-    const attribute = ManaBaseModule.FLAGS.ATTRIBUTES;
-
-    // TODO: Replace with a loop over the enum.
-    manaFlags.push(`${flags}.${modId}.${attribute}.manaCap`);
-    manaFlags.push(`${flags}.${modId}.${attribute}.manaControl`);
-    manaFlags.push(`${flags}.${modId}.${attribute}.manaRegen`);
-    manaFlags.push(`${flags}.${modId}.${attribute}.manaX`);
-    manaFlags.push(`${flags}.${modId}.${attribute}.overchargeCap`);
-
-    const initDAE = async () => {
-      for (let i = 0; i < 100; i++) {
-        if (globalThis.DAE) {
-          globalThis.DAE.addAutoFields(manaFlags);
-          return true;
-        } else {
-          await new Promise((resolve) => setTimeout(resolve, 100));
-        }
-      }
-      return false;
-    };
-    initDAE().then((value) => {
-      if (!value)
-        console.error(`${ManaBaseModule.ID} | initDAE settings failed.`);
-    });
-  }
-}
-
-/**
  * Compares two objects for deep equality.
  * This means that it will compare the values of the objects, not the references.
  *
