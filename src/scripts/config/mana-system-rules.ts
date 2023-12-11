@@ -31,12 +31,14 @@ export const manaRegenFormula = (intMod: number, profBonus: number): number =>
 export const manaControlDiceFormula = (chaMod: number): number => chaMod + 2;
 
 /**
- * Formula to calculate the maximum overcharge value a character can safely hold beyond the normal
- * maximum. Note that this function does not account for sorcerer's getting +10 to this value.
- * @param  chaMod Charisma modifier of the character.
+ * Formula to calculate the maximum overcharge value a character can safely hold beyond the normal maximum.
+ * Note that this function does not account for sorcerer's getting +10 to this value.
+ * @param chaMod Charisma modifier of the character.
+ * @param bonus Bonus to value, e.g. Sorcerer's class bonus.
  * @returns Overcharge capacity.
  */
-export const overchargeCapFormula = (chaMod: number): number => chaMod * 3;
+export const overchargeCapFormula = (chaMod: number, bonus: number): number =>
+  chaMod * 3 + bonus;
 
 //TODO: Read this in from a JSON file.
 const classXValueMap = new Map<PMClass, number>([

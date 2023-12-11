@@ -1,15 +1,16 @@
 import invariant from "tiny-invariant";
+import GameAPI from "./game-api";
 
 /**
  * Simple class containing some useful utility functions for manipulating flags in Foundry.
  */
 export default class FlagAPI {
   private moduleId: string;
-  private gameInstance: Game;
+  private gameApi: GameAPI;
 
-  constructor(moduleId: string, gameInstance: Game = game) {
+  constructor(moduleId: string, gameApi = new GameAPI()) {
     this.moduleId = moduleId;
-    this.gameInstance = gameInstance;
+    this.gameApi = gameApi;
   }
 
   /**
@@ -19,7 +20,7 @@ export default class FlagAPI {
    * @returns The value of the flag.
    */
   getActorFlag(actorId: string, flagKey: any): any {
-    const actor: Actor = this.getActor(actorId);
+    const actor: Actor = this.gameApi.getActor(actorId);
     const flag = actor.getFlag(this.moduleId, flagKey);
     invariant(flag, "Flag not found.");
     return flag;
@@ -33,7 +34,7 @@ export default class FlagAPI {
    */
   setActorFlag(actorId: string, flagKey: any, flagValue: any): void {
     game.actors?.get("")?.getFlag;
-    const actor: Actor = this.getActor(actorId);
+    const actor: Actor = this.gameApi.getActor(actorId);
     actor.setFlag(this.moduleId, flagKey, flagValue);
   }
 
@@ -43,21 +44,7 @@ export default class FlagAPI {
    * @param flagKey The key of the flag to unset.
    */
   unsetActorFlag(actorId: string, flagKey: any): void {
-    const actor: Actor = this.getActor(actorId);
+    const actor: Actor = this.gameApi.getActor(actorId);
     actor.unsetFlag(this.moduleId, flagKey);
-  }
-
-  /**
-   * Utility function to get an actor from the game.
-   * Will throw an error if the actor is not found or if the actors are not initialized.
-   * @param actorId The ID of the actor we want to get.
-   * @returns The actor.
-   */
-  getActor(actorId: string): Actor {
-    const actors = this.gameInstance.actors;
-    invariant(actors, "Actors are not initialized.");
-    const actor = actors.get(actorId);
-    invariant(actor, "Actor not found.");
-    return actor;
   }
 }

@@ -1,14 +1,6 @@
 // This section contains all the used hooks and their callbacks.
 
 /**
- * A hook event that fires when the game is fully ready.
- * Useful when you need the game data to be fully initialised.
- */
-Hooks.on("ready", async function () {
-  updateModuleDataModels();
-});
-
-/**
  * A hook event that fires for every embedded Document type after conclusion of a creation workflow.
  * Substitute the Document name in the hook event to target a specific type, for example "createToken".
  * This hook fires for all connected clients after the creation has been processed.
