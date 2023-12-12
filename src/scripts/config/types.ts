@@ -73,7 +73,7 @@ export interface ManaDependentAttributes {
   chaMod: number;
   manaX: number;
   profBonus: number;
-  class: PMClass;
+  class: PMClass | undefined;
 }
 
 // TODO: These interfaces should be separated, probably want to create a dedicated type/types folder.

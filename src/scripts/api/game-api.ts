@@ -1,4 +1,5 @@
 import invariant from "tiny-invariant";
+import { stringToBoolean } from "../utils/code-utils";
 
 export default class GameAPI {
   private gameInstance: Game;
@@ -19,5 +20,32 @@ export default class GameAPI {
     const actor = actors.get(actorId);
     invariant(actor, "Actor not found.");
     return actor;
+  }
+
+  /**
+   * Get a given setting as a boolean value or a default value if the parsing fails.
+   *
+   * @param moduleId The id of the module, used as the namespace of the setting.
+   * @param settingId The unique id of the setting.
+   * @param defaultValue Fallback default.
+   * @returns Setting as boolean.
+   */
+  getSettingAsBool(
+    moduleId: string,
+    settingId: string,
+    defaultValue: boolean
+  ): boolean {
+    return stringToBoolean(this.getSetting(moduleId, settingId), defaultValue);
+  }
+
+  /**
+   * Get an unparsed game setting.
+   *
+   * @param moduleId The id of the module, used as the namespace of the setting.
+   * @param settingId The unique id of the setting.
+   * @returns Setting as string.
+   */
+  getSetting(moduleId: string, settingId: string): string {
+    return this.gameInstance.settings.get(moduleId, settingId) as string;
   }
 }
