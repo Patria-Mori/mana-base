@@ -7,7 +7,12 @@ import {
 } from "../config/mana-system-rules";
 import { module } from "../config/module-config";
 import { FLAGS } from "../config/module-constants";
-import { DNDActor, ManaDependentAttributes, PMClass } from "../config/types";
+import {
+  DNDActor,
+  ManaAttributes,
+  ManaDependentAttributes,
+  PMClass,
+} from "../config/types";
 import { deepEqual } from "../utils/code-utils";
 import {
   getAbilityModifiers,
@@ -40,10 +45,7 @@ export default class ActorAPI {
    */
   updateManaAttributes(actorId: string) {
     const actor = this.getDNDActor(actorId);
-    this.manaApi.setManaAttributes(
-      actorId,
-      calculateActorManaAttributes(actor)
-    );
+    this.manaApi.setManaAttributes(actorId, calculateManaAttributes(actor));
   }
 
   /**
@@ -112,7 +114,7 @@ export default class ActorAPI {
       this.flagApi.setActorFlag(
         actorId,
         FLAGS.DEPENDENT_ATTRIBUTES,
-        calculateActorManaAttributes
+        calculateManaAttributes
       );
       this.updateManaAttributes(actorId);
     }
@@ -129,7 +131,7 @@ export default class ActorAPI {
  * @param actor An actor object.
  * @returns Mana attributes derived from the actor.
  */
-export function calculateActorManaAttributes(actor: DNDActor): ManaAttributes {
+export function calculateManaAttributes(actor: DNDActor): ManaAttributes {
   const mods = getAbilityModifiers(actor);
   const profBonus = getProficiencyBonus(actor);
   const actorClass = getOriginalClassIdentifier(actor) || PMClass.Fighter;

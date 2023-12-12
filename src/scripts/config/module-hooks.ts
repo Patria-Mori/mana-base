@@ -1,8 +1,17 @@
+import ActorAPI from "../api/actor-api";
+import FlagAPI from "../api/flag-api";
+import GameAPI from "../api/game-api";
+import { ManaAPI } from "../api/mana-api";
 import { addManaFlagsToDAE } from "../utils/dependency-utils";
 import { updateModuleDataModels } from "../utils/upgrade-util";
 import { module } from "./module-config";
 import { TEMPLATES } from "./module-constants";
-import { registerModuleSettings } from "./module-settings";
+import { registerModuleSettings, modSettings } from "./module-settings";
+
+const gameApi = new GameAPI();
+const flagApi = new FlagAPI(module.id, gameApi);
+const manaApi = new ManaAPI(flagApi);
+const actorApi = new ActorAPI(flagApi, manaApi, gameApi);
 
 // This section contains all the used hooks and their callbacks.
 /**
@@ -48,8 +57,11 @@ Hooks.on("ready", async function () {
  */
 Hooks.on(
   "createActor",
-  async function (document: Document, _options: unknown, _userId: unknown) {
-    // ActorManaFlagUtils.initActorFlags(document);
+  async function (actorDocument: any, _options: unknown, _userId: unknown) {
+    actorApi.initialiseActorFlags(
+      actorDocument._id,
+      getDisplayUIDefault(actorDocument.type)
+    );
   }
 );
 
@@ -82,4 +94,26 @@ async function preloadHandlebarsTemplates() {
   ];
 
   return loadTemplates(templatePaths);
+}
+
+/**
+ * Utility function that determines the default mana UI display value
+ * to set on new actors based on the actor type and the world settings.
+ *
+ * @param actorType - The actor type.
+ * @returns The default mana UI display value.
+ */
+function getDisplayUIDefault(actorType: string): boolean {
+  switch (actorType) {
+    case "character":
+      return modSettings.showUiOnPlayers.default;
+    case "npc":
+      return modSettings.showUiOnNPCs.default;
+    case "vehicle":
+      return modSettings.showUiOnVehicles.default;
+    case "group":
+      return modSettings.showUiOnGroups.default;
+    default:
+      return false;
+  }
 }

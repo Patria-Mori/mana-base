@@ -64,8 +64,7 @@ const classXValueMap = new Map<PMClass, number>([
  * PS: Note that this may not be accurate in situations where a character has multi-classed
  * into a class with a higher X value, in these situations different, complex rules apply.
  * @param actorClass The class of the character.
- * @returns X value of the character or undefined.
+ * @returns X value of the character or 1 by default.
  */
-export const approximateManaXValue = (
-  actorClass: PMClass
-): number | undefined => classXValueMap.get(actorClass);
+export const approximateManaXValue = (actorClass: PMClass): number =>
+  classXValueMap.get(actorClass) || 1;

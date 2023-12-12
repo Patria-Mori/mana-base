@@ -1,5 +1,15 @@
-// Utility functions for updating the data models of actors when the module is updated.
+import { getOriginalClassIdentifier } from "../api/actor-api";
+import {
+  approximateManaXValue,
+  manaCapFormula,
+  manaControlDiceFormula,
+  manaRegenFormula,
+  overchargeCapFormula,
+} from "../config/mana-system-rules";
+import { PMClass } from "../config/types";
+import ManaAttributes from "../model/mana-attributes";
 
+// Utility functions for updating the data models of actors when the module is updated.
 /**
  * During start-up this function is called, and goes through all the actors in the world,
  * updating the data models fo the actors who have outdated data models.
@@ -55,20 +65,13 @@ async function updateV01xToV020(actor: any) {
   const chaMod = actor.system.abilities.cha.mod;
   const profBonus = actor.system.attributes.prof;
   const xValue = actor.flags["mana-base"]["attributes"].manaX;
-  const actorClass = ActorManaFlagUtils.findOriginalClassIdentifier(
-    actorId
-  ) as string;
+  const actorClass = getOriginalClassIdentifier(actor) || PMClass.Fighter;
 
-  const manaCap = ManaSystemRules.calculateManaCap(
-    wisMod,
-    profBonus,
-    xValue,
-    0
-  );
-  const manaX = ManaSystemRules.approximateManaX(actorClass);
-  const manaRegen = ManaSystemRules.calculateManaRegen(intMod, profBonus, 0);
-  const manaControlDice = ManaSystemRules.calculateManaControlDice(chaMod, 0);
-  const overchargeCap = ManaSystemRules.calculateOverchargeCap(chaMod, 0);
+  const manaCap = manaCapFormula(wisMod, profBonus, xValue);
+  const manaX = approximateManaXValue(actorClass);
+  const manaRegen = manaRegenFormula(intMod, profBonus);
+  const manaControlDice = manaControlDiceFormula(chaMod);
+  const overchargeCap = overchargeCapFormula(chaMod, 0);
 
   const newAttributes = new ManaAttributes(
     manaCap,

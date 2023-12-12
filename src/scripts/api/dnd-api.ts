@@ -1,5 +1,6 @@
 import { FLAGS } from "../config/module-constants";
 import { DNDActor } from "../config/types";
+import ManaAttributes from "../model/mana-attributes";
 
 /**
  * Get the proficiency bonus of an actor.
@@ -36,5 +37,26 @@ export function getAbilityModifiers(actor: DNDActor) {
  * @returns manaX value.
  */
 export function getManaXValue(actor: DNDActor): number {
-  return actor.flags[module.id][FLAGS.ATTRIBUTES].manaX;
+  return getManaAttributesFromFlag(actor).manaX;
+}
+
+/**
+ * Get the mana attributes from the actor's flag.
+ * These will be the values after active effects are applied.
+ *
+ * @param actor Actor object.
+ * @returns Mana attributes.
+ */
+export function getManaAttributesFromFlag(actor: DNDActor): ManaAttributes {
+  return actor.flags[module.id][FLAGS.ATTRIBUTES];
+}
+
+/**
+ * Get the state (how much they currently hold) of an actor's mana from their flag.
+ *
+ * @param actor Actor object.
+ * @returns Mana state value.
+ */
+export function getManaState(actor: DNDActor): number {
+  return actor.flags[module.id][FLAGS.STATE];
 }
