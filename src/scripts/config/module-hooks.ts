@@ -4,6 +4,7 @@ import GameAPI from "../api/game-api";
 import { ManaAPI } from "../api/mana-api";
 import { addManaFlagsToDAE } from "../utils/dependency-utils";
 import { updateModuleDataModels } from "../utils/upgrade-util";
+import { injectUIIntoActorSheet } from "../views/actor-sheet-ui";
 import { module } from "./module-config";
 import { TEMPLATES } from "./module-constants";
 import { registerModuleSettings, modSettings } from "./module-settings";
@@ -79,7 +80,14 @@ Hooks.on(
 Hooks.on(
   "renderActorSheet",
   async function (actorSheet: Application, html: JQueryStatic, _data: object) {
-    // injectUiIntoActorSheet(actorSheet, html);
+    injectUIIntoActorSheet(
+      flagApi,
+      gameApi,
+      actorApi,
+      manaApi,
+      actorSheet,
+      html
+    );
   }
 );
 

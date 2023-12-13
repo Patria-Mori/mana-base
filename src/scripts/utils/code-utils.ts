@@ -31,6 +31,24 @@ function isObject(object: any) {
 }
 
 /**
+ * Calculates the "lazy" value using a given input.
+ * If the lazy value is just a number it will return that number.
+ * If the lazy value contains a + or - it will add or subtract that value from the old value.
+ * The lower bound is 0.
+ *
+ * @param oldMana The old value.
+ * @param lazyMana The lazy value.
+ * @returns The calculated lazy value as a number.
+ */
+export function lazyValue(oldValue: number, lazyValue: string) {
+  const regex = /^[+-]\d+$/;
+  const newValue = regex.test(lazyValue)
+    ? oldValue + parseInt(lazyValue)
+    : parseInt(lazyValue);
+  return Math.max(newValue, 0);
+}
+
+/**
  * Takes in a string and tries to parse it to a boolean value.
  * If it fails it will return the defaultValue.
  *
