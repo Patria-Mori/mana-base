@@ -1,9 +1,11 @@
+import { module } from "./module-config";
+
 /**
  * Register module settings
  * Setting types are not updated to v10, so we have to ignore the type errors.
  */
 export function registerModuleSettings() {
-  game.settings.register(ManaBaseModule.ID, modSettings.showUiOnPlayers.id, {
+  game.settings.register(module.id, modSettings.showUiOnPlayers.id, {
     name: "New PC Actor Mana UI Default",
     hint: "If enabled, all new Player Character actors will have the mana UI shown by default.",
     scope: modSettings.showUiOnPlayers.scope,
@@ -13,7 +15,7 @@ export function registerModuleSettings() {
     type: Boolean,
     default: modSettings.showUiOnPlayers.default,
   });
-  game.settings.register(ManaBaseModule.ID, modSettings.showUiOnNPCs.id, {
+  game.settings.register(module.id, modSettings.showUiOnNPCs.id, {
     name: "New NPC Actor Mana UI Default",
     hint: "If enabled, all new Non-Player Character actors will have the mana UI shown by default.",
     scope: modSettings.showUiOnNPCs.scope,
@@ -23,7 +25,7 @@ export function registerModuleSettings() {
     type: Boolean,
     default: modSettings.showUiOnNPCs.default,
   });
-  game.settings.register(ManaBaseModule.ID, modSettings.showUiOnVehicles.id, {
+  game.settings.register(module.id, modSettings.showUiOnVehicles.id, {
     name: "New Vehicle Actor Mana UI Default",
     hint: "If enabled, all new Vehicle actors will have the mana UI shown by default.",
     scope: modSettings.showUiOnVehicles.scope,
@@ -33,7 +35,7 @@ export function registerModuleSettings() {
     type: Boolean,
     default: modSettings.showUiOnVehicles.default,
   });
-  game.settings.register(ManaBaseModule.ID, modSettings.showUiOnGroups.id, {
+  game.settings.register(module.id, modSettings.showUiOnGroups.id, {
     name: "New Group Actor Mana UI Default",
     hint: "If enabled, all new Group actors will have the mana UI shown by default.",
     scope: modSettings.showUiOnGroups.scope,
@@ -43,7 +45,7 @@ export function registerModuleSettings() {
     type: Boolean,
     default: modSettings.showUiOnGroups.default,
   });
-  game.settings.register(ManaBaseModule.ID, modSettings.showUiClient.id, {
+  game.settings.register(module.id, modSettings.showUiClient.id, {
     //The setting name should be set somewhere else, like in a constants file.
     name: "Display Mana UI in actor sheets",
     hint: "If enabled, mana will be shown in character sheets.",

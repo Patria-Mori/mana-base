@@ -1,4 +1,5 @@
 import { getOriginalClassIdentifier } from "../api/actor-api";
+import FlagAPI from "../api/flag-api";
 import {
   approximateManaXValue,
   manaCapFormula,
@@ -6,8 +7,10 @@ import {
   manaRegenFormula,
   overchargeCapFormula,
 } from "../config/mana-system-rules";
+import { FLAGS } from "../config/module-constants";
 import { PMClass } from "../config/types";
 import ManaAttributes from "../model/mana-attributes";
+import { log } from "../module";
 
 // Utility functions for updating the data models of actors when the module is updated.
 /**
@@ -17,16 +20,16 @@ import ManaAttributes from "../model/mana-attributes";
  * It iterates over all the actors in the world, and identifies the actors who have outdated data models,
  * and then calls the update function for that specific version of the data model.
  */
-export async function updateModuleDataModels() {
+export async function updateModuleDataModels(flagApi: FlagAPI) {
   const actors = game.actors as Actors;
   for (let actor of actors) {
-    let actorDataModelVersion = ManaFlagUtils.getManaActorFlag(
+    let actorDataModelVersion = flagApi.getActorFlag(
       (actor as any)._id,
-      ManaBaseModule.FLAGS.MODULE_VERSION
+      FLAGS.MODULE_VERSION
     );
     switch (actorDataModelVersion) {
       case undefined:
-        updateV01xToV020(actor);
+        updateV01xToV020(actor, flagApi);
         break;
       default:
         break;
@@ -52,11 +55,8 @@ export async function updateModuleDataModels() {
  * 5. "_display-ui" is set to true.
  * 6. "_module-version" is set to "0.2.0".
  */
-async function updateV01xToV020(actor: any) {
-  ManaBaseModule.log(
-    true,
-    "Updating actor " + actor.name + " from v0.1.x to v0.2.0"
-  );
+async function updateV01xToV020(actor: any, flagApi: FlagAPI) {
+  log(true, "Updating actor " + actor.name + " from v0.1.x to v0.2.0");
   const actorId = actor._id;
 
   // Step 1
@@ -80,14 +80,10 @@ async function updateV01xToV020(actor: any) {
     manaRegen,
     manaControlDice
   );
-  ManaFlagUtils.setManaActorFlag(actorId, "attributes", newAttributes);
+  flagApi.setActorFlag(actorId, "attributes", newAttributes);
 
   // Step 2
-  ManaFlagUtils.setManaActorFlag(
-    actorId,
-    "state",
-    actor.flags["mana-base"].state
-  );
+  flagApi.setActorFlag(actorId, "state", actor.flags["mana-base"].state);
 
   // Step 3
   const dependentAttributes = {
@@ -98,26 +94,19 @@ async function updateV01xToV020(actor: any) {
     profBonus,
     class: actorClass,
   };
-  ManaFlagUtils.setManaActorFlag(
-    actorId,
-    "_dependent-attributes",
-    dependentAttributes
-  );
-  ManaFlagUtils.unsetActorFlag(actorId, "mana-base", "_dependency-attributes");
+  flagApi.setActorFlag(actorId, "_dependent-attributes", dependentAttributes);
+  flagApi.unsetActorFlag(actorId, "_dependency-attributes");
 
   // Step 4
-  const oldExpandedUiFlag = ManaFlagUtils.getManaActorFlag(
-    actorId,
-    "_extended-UI"
-  )
-    ? ManaFlagUtils.getManaActorFlag(actorId, "_extended-UI")
+  const oldExpandedUiFlag = flagApi.getActorFlag(actorId, "_extended-UI")
+    ? flagApi.getActorFlag(actorId, "_extended-UI")
     : false;
-  ManaFlagUtils.setManaActorFlag(actorId, "_expanded-ui", oldExpandedUiFlag);
-  ManaFlagUtils.unsetActorFlag(actorId, "mana-base", "_extended-UI");
+  flagApi.setActorFlag(actorId, "_expanded-ui", oldExpandedUiFlag);
+  flagApi.unsetActorFlag(actorId, "_extended-UI");
 
   // Step 5
-  ManaFlagUtils.setManaActorFlag(actorId, "_display-ui", true);
+  flagApi.setActorFlag(actorId, "_display-ui", true);
 
   // Step 6
-  ManaFlagUtils.setManaActorFlag(actorId, "_module-version", "0.2.0");
+  flagApi.setActorFlag(actorId, "_module-version", "0.2.0");
 }

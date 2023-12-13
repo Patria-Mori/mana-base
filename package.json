@@ -1,12 +1,13 @@
 {
   "name": "mana-base",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "description": "A simple module that provides a lot of nice automation for using Lori's mana system in Foundry VTT.",
   "private": true,
   "scripts": {
     "build": "tsc && vite build",
     "watch": "tsc && vite build --watch",
-    "test": "vitest"
+    "test": "vitest",
+    "test-coverage": "vitest --coverage"
   },
   "devDependencies": {
     "@league-of-foundry-developers/foundry-vtt-types": "^9.280.0",

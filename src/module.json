@@ -7,25 +7,11 @@
       "name": "Jonas Drageset Lindaas"
     }
   ],
-  "version": "0.2.1",
   "compatibility": {
     "minimum": 10,
     "verified": 10
   },
-  "scripts": [
-    "scripts/module.js",
-    "scripts/moduleConfig.js",
-    "scripts/moduleHooks.js",
-    "scripts/api/manaState.js",
-    "scripts/model/manaAttributes.js",
-    "scripts/model/manaSystemRules.js",
-    "scripts/module/moduleSettings.js",
-    "scripts/utils/actorUtils.js",
-    "scripts/utils/flagUtils.js",
-    "scripts/utils/moduleUtils.js",
-    "scripts/utils/updateUtils.js",
-    "scripts/view/actorSheetUI.js"
-  ],
+  "esmodules": ["scripts/module.js"],
   "languages": [
     {
       "lang": "en",

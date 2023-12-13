@@ -1,6 +1,7 @@
 import invariant from "tiny-invariant";
 import { FLAGS } from "../config/module-constants";
 import FlagAPI from "./flag-api";
+import ManaAttributes from "../model/mana-attributes";
 
 /**
  * The Mana API can be used to manipulate the mana state or attributes of an actor.

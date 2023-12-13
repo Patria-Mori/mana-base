@@ -44,7 +44,7 @@ Hooks.on("setup", async function () {
  * Useful when you need the game data to be fully initialised.
  */
 Hooks.on("ready", async function () {
-  updateModuleDataModels();
+  updateModuleDataModels(flagApi);
 });
 
 /**
